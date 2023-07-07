@@ -1,7 +1,10 @@
 package com.example.week2_v1
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
+import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -9,7 +12,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.week2_v1.databinding.ActivityMainBinding
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.common.util.Utility
+import com.kakao.sdk.user.UserApiClient
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,10 +27,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //키 해시 받아오기
-        val keyHash = Utility.getKeyHash(this)
-        Log.d("Hash", keyHash)
-
+        //기존 Navigator 코드
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
