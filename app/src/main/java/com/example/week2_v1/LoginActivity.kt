@@ -31,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
 
         UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
             if (error != null) {
-                Toast.makeText(this, "토큰 정보 보기 실패", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "토큰 정보 보기 실패", Toast.LENGTH_SHORT).show()
             }
             else if (tokenInfo != null) {
                 Toast.makeText(this, "토큰 정보 보기 성공", Toast.LENGTH_SHORT).show()
@@ -91,9 +91,25 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+
+        val join_button = findViewById<ImageButton>(R.id.join_application) // 로그인 버튼
+
+        binding.joinApplication.setOnClickListener {
+            val intent = Intent(this, JoinActivity::class.java)
+            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+            finish()
+        }
+
         val just_develop_button = findViewById<Button>(R.id.developer) // 로그인 버튼
         just_develop_button.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+            finish()
+        }
+
+
+        binding.emailLoginButton.setOnClickListener {
+            val intent = Intent(this, LoginEmailActivity::class.java)
             startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             finish()
         }
