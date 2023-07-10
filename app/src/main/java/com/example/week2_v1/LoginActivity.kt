@@ -1,8 +1,10 @@
 package com.example.week2_v1
 
 // LoginActivity.kt
+
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -89,6 +91,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+
         val join_button = findViewById<ImageButton>(R.id.join_application) // 로그인 버튼
 
         binding.joinApplication.setOnClickListener {
@@ -97,10 +100,19 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
+        val just_develop_button = findViewById<Button>(R.id.developer) // 로그인 버튼
+        just_develop_button.setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+            finish()
+        }
+
+
         binding.emailLoginButton.setOnClickListener {
             val intent = Intent(this, LoginEmailActivity::class.java)
             startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             finish()
         }
+
     }
 }
