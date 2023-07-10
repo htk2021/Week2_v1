@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:gravity="center_vertical"
+        android:padding="20dp"
+        android:background="@drawable/rounded_corners"
+        android:orientation="horizontal"
+        >
+        <LinearLayout
+            android:layout_width="225dp"
+            android:layout_height="160dp"
+            android:padding="10dp"
+            android:orientation="vertical">
+
+            <!--제목-->
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제목"
+                android:textSize="16sp"
+                android:textColor="#000"/>
+            <LinearLayout
+                android:layout_width="270dp"
+                android:layout_height="20dp"
+                android:orientation="horizontal">
+                <!--시청 기록-->
+                <TextView
+                    android:id="@+id/timetext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="시청 기간 | "
+                    android:textSize="12sp"
+                    android:textColor="#444"
+                    android:maxLines="1"/>
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"
+                    android:text="2023-12-12 ~ 2023-12-23"
+                    android:textSize="12sp"
+                    android:textColor="#444"
+                    android:maxLines="1"/>
+            </LinearLayout>
+
+            <RatingBar
+                android:id="@+id/star"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:textSize="12sp"
+                android:textColor="#444"
+                android:maxLines="1"
+                android:numStars="5"
+                android:rating="0"
+                android:stepSize="1"
+                android:scaleX="1"
+                android:scaleY="1"/>
+
+            <!--한줄 평-->
+            <TextView
+                android:id="@+id/messagetext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="감상 후기"
+                android:textSize="12sp"
+                android:textColor="#444"
+                android:maxLines="1"/>
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="210dp"
+                android:layout_height="60dp"
+                android:text="감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요"
+                android:textSize="12sp"
+                android:textColor="#444"
+                android:maxLines="3"
+                android:ellipsize="end"/>
+
+        </LinearLayout>
+        <!--영화 포스터-->
+        <ImageView
+            android:id="@+id/poster"
+            android:layout_width="100dp"
+            android:layout_height="140dp"
+            android:src="@drawable/netflix"
+            android:scaleType="fitCenter"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
