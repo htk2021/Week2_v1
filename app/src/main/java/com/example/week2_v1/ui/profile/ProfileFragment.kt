@@ -3,6 +3,7 @@ package com.example.week2_v1.ui.profile
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
@@ -30,6 +32,8 @@ import com.example.week2_v1.SecondActivity
 import com.example.week2_v1.databinding.ActivityAddpageBinding
 import com.example.week2_v1.databinding.FragmentProfileActivityBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -39,6 +43,7 @@ import java.util.Locale
 class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyclerAdapter.ItemLongClickListener {
 
     private var _binding: FragmentProfileActivityBinding? = null
+    private lateinit var dialogView: View
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -56,7 +61,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mreviewItems = ArrayList()
+        mreviewItems = loadReviewItems()
         val dashboardViewModel =
             ViewModelProvider(this).get(ProfileViewModel::class.java)
 
@@ -73,25 +78,20 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         mRecyclerAdapter.setReviewList(mreviewItems)
 
         val iconplus: FloatingActionButton= root.findViewById(R.id.button1)
-        Log.d("MyApp", "iconplus: $iconplus")
-        Log.d("MyApp", "is iconplus enabled: ${iconplus.isEnabled}")
-        Log.d("MyApp", "is iconplus clickable: ${iconplus.isClickable}")
-
-
         iconplus.setOnClickListener {
             Log.d("MyApp", "Button clicked") // Add this line
 
             val intent = Intent(requireActivity(), Addpage_activity::class.java)
             startActivityForResult(intent,ADD_PAGE_REQUEST_CODE)
-            //activity?.finish()
-            Toast.makeText(requireContext(), "플로팅 버튼 클릭", Toast.LENGTH_SHORT).show()
-
-
         }
-
+        val settingbutton: Button= root.findViewById(R.id.setting)
+        settingbutton.setOnClickListener {
+            val intent = Intent(requireActivity(), Setting::class.java)
+            startActivityForResult(intent,10)
+        }
         return root
     }
-
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 // handle the result here...
@@ -103,17 +103,37 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
                     mreviewItems.add(it)
                     mRecyclerAdapter.setReviewList(mreviewItems)
                     mRecyclerAdapter.notifyDataSetChanged()
+                    saveReviewItems()
                 }
             }
         }
         if (requestCode == 33 && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 val editedReviewItem = data.getParcelableExtra<ReviewItem>("editedreview")
-                val position = data.getIntExtra("position", -1)
-                if (editedReviewItem != null && position != -1) {
+                val position = data?.getIntExtra("position",-1)
+                if (editedReviewItem != null && position != -1 && position != null ) {
+
                     // 수정된 리뷰를 업데이트
                     mreviewItems[position] = editedReviewItem
-                    mRecyclerAdapter.notifyDataSetChanged()
+                    mRecyclerAdapter.notifyItemChanged(position)
+                    Log.d("why..item","$editedReviewItem")
+                    val title = dialogView.findViewById<TextView>(R.id.title)
+                    val author = dialogView.findViewById<TextView>(R.id.author)
+                    val dateString = dialogView.findViewById<TextView>(R.id.time)
+                    val page = dialogView.findViewById<TextView>(R.id.page)
+                    val log1 = dialogView.findViewById<TextView>(R.id.log1)
+                    val log2 = dialogView.findViewById<TextView>(R.id.log2)
+                    val log3 = dialogView.findViewById<ImageView>(R.id.log3)
+                    val button = dialogView.findViewById<Button>(R.id.addbutton)
+                    title.text = editedReviewItem.title
+                    page.setText(editedReviewItem.startPage.toString()+"쪽에서"+editedReviewItem.endPage.toString()+"쪽까지")
+                    log1.setText("\""+editedReviewItem.log1.toString()+"\", "+editedReviewItem.log1page.toString()+"p")
+                    log2.setText(editedReviewItem.log2.toString())
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    dateString.text = "${editedReviewItem.date?.format(dateFormatter)}"
+                    saveReviewItems()
+
+
                 }
             }
         }
@@ -126,6 +146,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
             mreviewItems.removeAt(position)
             mRecyclerAdapter.setReviewList(mreviewItems)
             mRecyclerAdapter.notifyDataSetChanged()
+            saveReviewItems()
             dialog.dismiss()
         }
         builder.setPositiveButton("No") { dialog, _ ->
@@ -137,23 +158,26 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onItemClick(view: View, position: Int) {
         val item: ReviewItem = mreviewItems[position]
-
         val inflater: LayoutInflater = layoutInflater
-        val dialogView: View = inflater.inflate(R.layout.activity_detail_review, null)
+        dialogView= inflater.inflate(R.layout.activity_detail_review, null)
+        val title = dialogView.findViewById<TextView>(R.id.title)
+        val author = dialogView.findViewById<TextView>(R.id.author)
+        val dateString = dialogView.findViewById<TextView>(R.id.time)
+        val page = dialogView.findViewById<TextView>(R.id.page)
+        val log1 = dialogView.findViewById<TextView>(R.id.log1)
+        val log2 = dialogView.findViewById<TextView>(R.id.log2)
+        val log3 = dialogView.findViewById<ImageView>(R.id.log3)
+        val button = dialogView.findViewById<Button>(R.id.button)
 
-        val title: TextView = dialogView.findViewById(R.id.title)
-        val poster: ImageView = dialogView.findViewById(R.id.poster)
-        val message: TextView = dialogView.findViewById(R.id.message)
-        val star: RatingBar = dialogView.findViewById(R.id.star)
-        val time: TextView = dialogView.findViewById(R.id.time)
-        val button: Button = dialogView.findViewById(R.id.button)
-
-        title.text = item.title
-        message.text = item.message
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        time.text = "${item.startDate?.format(dateFormatter)} ~ ${item.endDate?.format(dateFormatter)}"
-        star.rating = item.star?.toFloat() ?: 0.0f
+        title?.text = item.title
+        page?.setText(item.startPage.toString()+"쪽부터"+item.endPage.toString()+"쪽까지")
+        log1?.setText("\""+item.log1.toString()+"\", "+item.log1page.toString()+"p")
+        log2?.setText(item.log2.toString())
+        Glide.with(log3.context)
+            .load(item.log3)
+            .into(log3)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
+        dateString.text = "${item.date?.format(dateFormatter)}"
 
 
         val dialog = Dialog(requireContext(), android.R.style.Theme_Light_NoTitleBar_Fullscreen)
@@ -169,7 +193,6 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         dialogView.setOnTouchListener(object : View.OnTouchListener {
             private var downY = 0f
             private val CLOSE_THRESHOLD = 50
-
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
@@ -186,12 +209,34 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
                 return false
             }
         })
-
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    private fun saveReviewItems() {
+        try {
+            val fos = requireActivity().openFileOutput("reviews.dat", Context.MODE_PRIVATE)
+            val os = ObjectOutputStream(fos)
+            os.writeObject(mreviewItems)
+            os.close()
+            fos.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    private fun loadReviewItems(): ArrayList<ReviewItem> {
+        try {
+            val fis = requireActivity().openFileInput("reviews.dat")
+            val isObject = ObjectInputStream(fis)
+            val reviews: ArrayList<ReviewItem> = isObject.readObject() as ArrayList<ReviewItem>
+            isObject.close()
+            fis.close()
+            return reviews
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return ArrayList()
     }
 }

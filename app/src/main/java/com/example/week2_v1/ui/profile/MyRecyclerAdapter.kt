@@ -3,6 +3,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
@@ -66,11 +67,12 @@ class MyRecyclerAdapter : RecyclerView.Adapter<MyRecyclerAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener,
         View.OnLongClickListener {
-        private val title: TextView = itemView.findViewById(R.id.title)
-        private val star: RatingBar = itemView.findViewById(R.id.star)
-        private val message: TextView = itemView.findViewById(R.id.message)
-        private val time: TextView = itemView.findViewById(R.id.time)
-        private val poster: ImageView = itemView.findViewById(R.id.poster)
+        val title = itemView.findViewById<TextView>(R.id.title)
+        val author = itemView.findViewById<TextView>(R.id.author)
+        val dateString = itemView.findViewById<TextView>(R.id.time)
+        val page = itemView.findViewById<TextView>(R.id.page)
+        val log1 = itemView.findViewById<TextView>(R.id.log1)
+        val log3 = itemView.findViewById<ImageView>(R.id.log3)
 
         init {
             itemView.setOnClickListener(this)
@@ -81,11 +83,14 @@ class MyRecyclerAdapter : RecyclerView.Adapter<MyRecyclerAdapter.ViewHolder>() {
         @RequiresApi(Build.VERSION_CODES.O)
         fun onBind(item: ReviewItem?) {
             item?.let {
-                star.rating = it.star?.toFloat() ?: 0.0f
                 title.text = it.title
-                message.text = it.message
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                time.text = it.startDate?.format(formatter).orEmpty() + " - " + it.endDate?.format(formatter).orEmpty()
+                val formatter = DateTimeFormatter.ofPattern("MM.dd.yyyy")
+                dateString.setText(it.date?.format(formatter) ?: "")
+                page.setText(it.startPage.toString()+"페이지 ~ "+it.endPage.toString()+"페이지")
+                log1.setText("\""+it.log1?.toString()+"\", "+ it.log1page.toString() + "p"?: it.log2.toString())
+                Glide.with(log3.context)
+                    .load(it.log3)
+                    .into(log3)
 
             }
         }

@@ -10,28 +10,44 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="300dp"
         android:gravity="center_vertical"
-        android:padding="20dp"
+        android:padding="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:background="@drawable/rounded_corners"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         >
+
         <LinearLayout
-            android:layout_width="225dp"
-            android:layout_height="160dp"
-            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:orientation="vertical">
 
             <!--제목-->
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="제목"
-                android:textSize="16sp"
-                android:textColor="#000"/>
             <LinearLayout
-                android:layout_width="270dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="제목"
+                    android:textColor="#000"
+                    android:textSize="22sp" />
+                <TextView
+                    android:id="@+id/author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="작가"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:layout_marginLeft="10dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:orientation="horizontal">
                 <!--시청 기록-->
@@ -39,61 +55,62 @@
                     android:id="@+id/timetext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="시청 기간 | "
-                    android:textSize="12sp"
+                    android:maxLines="1"
+                    android:text="읽은 날짜 | "
                     android:textColor="#444"
-                    android:maxLines="1"/>
+                    android:textSize="12sp" />
+
                 <TextView
                     android:id="@+id/time"
-                    android:layout_width="160dp"
+                    android:layout_width="90dp"
                     android:layout_height="wrap_content"
-                    android:text="2023-12-12 ~ 2023-12-23"
-                    android:textSize="12sp"
+                    android:maxLines="1"
+                    android:text="2023-12-12"
                     android:textColor="#444"
-                    android:maxLines="1"/>
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/pagetext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="읽은 페이지 | "
+                    android:textColor="#444"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/page"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="222페이지 ~ 222페이지"
+                    android:textColor="#444"
+                    android:textSize="12sp" />
             </LinearLayout>
 
-            <RatingBar
-                android:id="@+id/star"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.AppCompat.RatingBar.Small"
-                android:textSize="12sp"
-                android:textColor="#444"
-                android:maxLines="1"
-                android:numStars="5"
-                android:rating="0"
-                android:stepSize="1"
-                android:scaleX="1"
-                android:scaleY="1"/>
-
-            <!--한줄 평-->
-            <TextView
-                android:id="@+id/messagetext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="감상 후기"
-                android:textSize="12sp"
-                android:textColor="#444"
-                android:maxLines="1"/>
-            <TextView
-                android:id="@+id/message"
-                android:layout_width="210dp"
-                android:layout_height="60dp"
-                android:text="감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요 감상 후기를 남기세요"
-                android:textSize="12sp"
-                android:textColor="#444"
-                android:maxLines="3"
-                android:ellipsize="end"/>
-
         </LinearLayout>
-        <!--영화 포스터-->
-        <ImageView
-            android:id="@+id/poster"
-            android:layout_width="100dp"
-            android:layout_height="140dp"
-            android:src="@drawable/netflix"
-            android:scaleType="fitCenter"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/log3"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/netflix"
+                android:scaleType="centerCrop"
+                android:alpha="0.5"/>
+            <TextView
+                android:id="@+id/log1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Your Text"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:textColor="#FFFFFF" />
+
+        </RelativeLayout>
+
 
     </LinearLayout>
 

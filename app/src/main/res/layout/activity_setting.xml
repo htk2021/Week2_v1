@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:text="취소"
+            android:textSize="20sp" />
+        <TextView
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:text="프로필 편집"
+            android:textSize="22sp"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:text="완료"
+            android:textSize="20sp"
+            android:textAlignment="textEnd"/>
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/gray_circle"
+        android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/editImage"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="사진 수정"
+        android:textSize="18sp"
+        android:layout_gravity="center"
+        android:textAlignment="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/Name"
+                android:layout_marginTop="16dp"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:text="이름"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/Email"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:text="이메일 주소"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/Password"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:text="비밀번호"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/Genre"
+                android:layout_width="120dp"
+                android:layout_height="280dp"
+                android:layout_marginTop="10dp"
+                android:text="장르"
+                android:textSize="22sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/EditName"
+                android:layout_marginTop="8dp"
+                android:layout_width="230dp"
+                android:layout_height="50dp"
+                android:text="이름"
+                android:textSize="22sp" />
+
+            <EditText
+                android:id="@+id/EditEmail"
+                android:layout_width="230dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:text="example@naver.com"
+                android:textSize="18sp"
+                android:inputType="textEmailAddress"/>
+
+            <EditText
+                android:id="@+id/EditPassword"
+                android:layout_width="230dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:text="비밀번호"
+                android:inputType="textPassword" />
+
+            <EditText
+                android:id="@+id/EditGenre"
+                android:layout_width="230dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:text="장르"
+                android:textSize="22sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
