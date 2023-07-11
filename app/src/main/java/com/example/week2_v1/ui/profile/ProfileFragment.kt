@@ -28,19 +28,29 @@ import com.bumptech.glide.Glide
 import com.example.week2_v1.Addpage_activity
 import com.example.week2_v1.Editpage_activity
 import com.example.week2_v1.FriendsListActivity
+import com.example.week2_v1.GlobalApplication
 import com.example.week2_v1.MainActivity
 import com.example.week2_v1.R
 import com.example.week2_v1.SecondActivity
 import com.example.week2_v1.databinding.ActivityAddpageBinding
 import com.example.week2_v1.databinding.FragmentProfileActivityBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-
 
 class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyclerAdapter.ItemLongClickListener {
 
@@ -55,8 +65,6 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
     private var mreviewItems: ArrayList<ReviewItem> = ArrayList()
     private val REQUEST_CODE = 1
     private val ADD_PAGE_REQUEST_CODE = 123
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -98,10 +106,140 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         followerTextView.setOnClickListener {
             val intent = Intent(requireActivity(), FriendsListActivity::class.java)
             startActivity(intent)
-        } //여기까지
+        }
+
+        val loggedInUser = GlobalApplication.loggedInUser // 현재 사용자의 이메일
+        fetchUserInformation(loggedInUser)
+
+        fetchReviews()
+        //여기까지
 
         return root
     }
+
+    private fun fetchReviews() {
+        val loggedInUser = GlobalApplication.loggedInUser // 현재 사용자의 이메일
+        val url = "https://famous-parrots-feel.loca.lt/user/reviews/$loggedInUser" // 서버의 API 엔드포인트
+        val request = Request.Builder().url(url).build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                activity?.runOnUiThread {
+                    // API 요청 실패 처리
+                    // 에러 처리 로직 구현
+                }
+            }
+
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                if (response.isSuccessful && responseBody != null) {
+                    activity?.runOnUiThread {
+                        try {
+                            val reviewsArray = JSONArray(responseBody)
+                            mreviewItems.clear()
+                            for (i in 0 until reviewsArray.length()) {
+                                val reviewJson = reviewsArray.getJSONObject(i)
+
+                                val author = reviewJson.getString("author")
+                                val reader = reviewJson.getString("reader")
+                                val title = reviewJson.getString("title")
+                                val readDateStr = reviewJson.getString("read_date")
+                                val readDate = ZonedDateTime.parse(readDateStr).toLocalDate() // read_date를 LocalDate로 변환
+                                val startPage = reviewJson.getInt("start_page")
+                                val endPage = reviewJson.getInt("end_page")
+                                val log1 = reviewJson.getString("memorable_quote")
+                                val log1page = reviewJson.getInt("memorable_page")
+                                val log2 = reviewJson.getString("comment")
+                                val log3 = reviewJson.getString("photo")
+                                // 필요한 다른 데이터도 가져와서 ReviewItem에 추가
+                                //후기에 띄워놓지 않더라도 일단 받아왔음
+
+                                val reviewItem = ReviewItem(
+                                    title = title,
+                                    date = readDate,
+                                    startPage = startPage,
+                                    endPage = endPage,
+                                    log1 = log1,
+                                    log1page = log1page,
+                                    log2 = log2,
+                                    log3 = log3
+                                    // 필요한 다른 데이터 전달
+                                )
+
+                                mreviewItems.add(reviewItem)
+                            }
+                            mRecyclerAdapter.setReviewList(mreviewItems)
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                    }
+                } else {
+                    activity?.runOnUiThread {
+                        // API 응답 실패 처리
+                        // 에러 처리 로직 구현
+                    }
+                }
+            }
+        })
+    }
+
+    private fun fetchUserInformation(email: String?) {
+        val url = "https://witty-shoes-suffer.loca.lt/user/$email" // 사용자 정보를 가져올 API 엔드포인트
+        val request = Request.Builder().url(url).build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // API 요청 실패 처리
+                activity?.runOnUiThread {
+                    // 에러 처리 로직 구현
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                if (response.isSuccessful && responseBody != null) {
+                    // API 응답 성공 및 사용자 정보 처리
+                    activity?.runOnUiThread {
+                        try {
+                            val userJson = JSONObject(responseBody)
+                            val name = userJson.getString("name")
+                            val image = userJson.getString("image")
+
+                            // 사용자 정보를 UI에 적용
+                            val usernameTextView: TextView = _binding?.root?.findViewById(R.id.username) as TextView
+                            val useremailTextView: TextView = _binding?.root?.findViewById(R.id.userdescription) as TextView
+                            val imageView: ImageView = _binding?.root?.findViewById(R.id.imageView) as ImageView
+
+                            usernameTextView.text = name
+                            useremailTextView.text = email
+
+                            if (image.isNotEmpty()) {
+                                // 이미지가 존재하는 경우 Glide를 사용하여 이미지 로드
+                                Glide.with(this@ProfileFragment)
+                                    .load(image)
+                                    .into(imageView)
+                            } else {
+                                // 이미지가 없는 경우 빈 화면을 표시 (설정해야 할 기본 이미지 등)
+                                imageView.setImageDrawable(null)
+                            }
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                    }
+                } else {
+                    // API 응답 실패 처리
+                    activity?.runOnUiThread {
+                        // 에러 처리 로직 구현
+                    }
+                }
+            }
+        })
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

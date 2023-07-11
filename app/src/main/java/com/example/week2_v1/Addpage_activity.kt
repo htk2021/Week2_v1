@@ -16,12 +16,22 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.RatingBar.OnRatingBarChangeListener
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.week2_v1.ui.profile.ReviewItem
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -100,31 +110,64 @@ class Addpage_activity : AppCompatActivity() {
             startActivityForResult(intent, 55)
         }
 
+        val addReviewUrl = "https://famous-parrots-feel.loca.lt/reviews"
         // Get Button instance and set listener
         val addbutton = findViewById<Button>(R.id.addbutton)
         addbutton.setOnClickListener {
             val title = title.text.toString()
-            val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
-
-            val datetext = LocalDate.parse(dateString.text.toString(),formatter)
-            val startPage = page1.text.toString().toIntOrNull() ?: 0
-            val endPage = page2.text.toString().toIntOrNull() ?: 0
-            val log1 = log1.text.toString()
-            val log1page = log1page.text.toString().toIntOrNull() ?: 0
-            val log2 = log2.text.toString()
+            val author = author.text.toString()
             val log3 = selectedImageUri?.toString()
+            val dateString = dateString.text.toString()
+            val page1 = page1.text.toString().toIntOrNull() ?: 0
+            val page2 = page2.text.toString().toIntOrNull() ?: 0
+            val log1page = log1page.text.toString().toIntOrNull() ?: 0
+            val log1 = log1.text.toString()
+            val log2 = log2.text.toString()
+            val loggedInUser = GlobalApplication.loggedInUser ?: "" // 작성자 정보를 가져옴
 
+            // 리뷰 데이터를 JSON 형식으로 생성
+            val reviewData = """
+        {
+            "title": "$title",
+            "author": "$author",
+            "photo": "$log3",
+            "read_date": "$dateString",
+            "start_page": $page1,
+            "end_page": $page2,
+            "memorable_page": $log1page,
+            "memorable_quote": "$log1",
+            "comment": "$log2",
+            "reader": "$loggedInUser"
+        }
+    """.trimIndent()
 
-            val reviewItem: Parcelable =
-                ReviewItem(title, datetext, startPage, endPage, log1, log1page, log2, log3)
+            // OkHttp를 사용하여 POST 요청을 전송
+            val client = OkHttpClient()
+            val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), reviewData)
+            val request = Request.Builder()
+                .url(addReviewUrl)
+                .post(requestBody)
+                .build()
 
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    // 요청 실패
+                    runOnUiThread {
+                        // 실패 처리 로직을 구현하세요
+                        Toast.makeText(this@Addpage_activity, "실패.", Toast.LENGTH_SHORT).show()
+                    }
+                }
 
-            val intent = Intent(this, MainActivity::class.java)
-            Log.d("why..itemadd","$reviewItem")
-            intent.putExtra("newreview", reviewItem)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            setResult(Activity.RESULT_OK, intent)
-            Log.d("NpsearchActivity!!", "Going to SearchActivity")
+                override fun onResponse(call: Call, response: Response) {
+                    // 요청 성공
+                    runOnUiThread {
+                        // 성공 처리 로직을 구현하세요
+                        val intent = Intent(this@Addpage_activity, MainActivity::class.java)
+                        startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                        finish()
+                    }
+                }
+            })
         }
 
         // Set up DatePickerDialog
