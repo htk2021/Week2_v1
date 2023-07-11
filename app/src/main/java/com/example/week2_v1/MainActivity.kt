@@ -1,6 +1,7 @@
 package com.example.week2_v1
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -24,12 +25,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //넘어올 때 계정 기억하는 부분
+        //val receivedEmail = intent.getStringExtra("email")
+        //Log.d("putextra 확인", "$receivedEmail")
+
         profileFragment = ProfileFragment()
         feedFragment = FeedFragment()
         searchFragment = SearchFragment()
 
         setupViewPager()
         setupBottomNavigationView()
+
     }
 
     private fun setupViewPager() {

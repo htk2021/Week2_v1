@@ -48,7 +48,7 @@ class JoinActivity : AppCompatActivity() {
     }
 
     private fun saveUserToMySQL(name: String, email: String, password: String) {
-        val url = "https://swift-grapes-decide.loca.lt/saveUser" // MySQL 서버 URL
+        val url = "https://beige-hounds-clean.loca.lt/saveUser" // MySQL 서버 URL
 
         val json = """
         {
@@ -59,23 +59,6 @@ class JoinActivity : AppCompatActivity() {
         """.trimIndent()
 
         val requestBody = RequestBody.create("application/json".toMediaType(), json)
-
-
-        /*
-        val requestBody = FormBody.Builder()
-            .add("name", name)
-            .add("email", email)
-            .add("password", password)
-            .build()
-
-        val a=requestBody.name(0)
-        val b=requestBody.value(0)
-        val c=requestBody.name(1)
-        val d=requestBody.value(1)
-        val e=requestBody.name(2)
-        val f=requestBody.value(2)
-        Log.d("zebal2", "$a $b $c $d $e $f")
-         */
 
         val request = Request.Builder()
             .url(url)
@@ -90,6 +73,8 @@ class JoinActivity : AppCompatActivity() {
                     runOnUiThread {
                         Toast.makeText(this@JoinActivity, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show()
                         // 회원가입 완료 후 다음 작업 수행
+                        GlobalApplication.loggedInUser=email
+
                         val intent = Intent(this@JoinActivity, MainActivity::class.java)
                         startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                         finish()
