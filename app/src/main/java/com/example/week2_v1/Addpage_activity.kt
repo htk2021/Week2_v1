@@ -125,7 +125,6 @@ class Addpage_activity : AppCompatActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             setResult(Activity.RESULT_OK, intent)
             Log.d("NpsearchActivity!!", "Going to SearchActivity")
-            finish()
         }
 
         // Set up DatePickerDialog

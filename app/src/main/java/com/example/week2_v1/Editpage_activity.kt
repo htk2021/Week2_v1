@@ -18,6 +18,7 @@ import android.widget.RatingBar.OnRatingBarChangeListener
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.week2_v1.ui.profile.ReviewItem
 import com.example.week2_v1.ui.profile.detail_review
 import com.google.android.material.datepicker.CalendarConstraints
@@ -38,10 +39,41 @@ class Editpage_activity : AppCompatActivity() {
     private val ADD_PAGE_REQUEST_CODE = 123
     private var selectedImageUri: Uri? = null
 
+    private lateinit var searchButton: TextView
+    private lateinit var titleTextView: TextView
+    private lateinit var authorTextView: TextView
+    private lateinit var descriptionTextView: TextView
+    private lateinit var imageView: ImageView
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editpage)
+
+        //황태경 추가
+        searchButton = findViewById(R.id.editTitle)
+        searchButton.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            startActivity(intent)
+            Log.d("AddpageActivity", "Going to SearchActivity")
+
+            finish()
+        }
+        titleTextView = findViewById(R.id.title)
+        authorTextView = findViewById(R.id.author)
+        descriptionTextView = findViewById(R.id.bookdetail)
+        imageView = findViewById(R.id.poster)
+        val item = intent.getSerializableExtra("item") as? Item
+        item?.let {
+            titleTextView.text = item.title
+            authorTextView.text = item.author
+            descriptionTextView.text = item.description
+            Glide.with(this)
+                .load(item.image)
+                .into(imageView)
+        }
 
         val title = findViewById<TextView>(R.id.title)
         val author = findViewById<TextView>(R.id.author)
@@ -78,28 +110,36 @@ class Editpage_activity : AppCompatActivity() {
             dateString.text = "$DateString"
 
         }
+        log3.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            val mimeTypes = arrayOf("image/jpeg", "image/png")
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+            startActivityForResult(intent, 55)
+        }
 
 
         // Get Button instance and set listener
         val addbutton = findViewById<Button>(R.id.addbutton)
         addbutton.setOnClickListener {
             val title = title.text.toString()
-            val dateParts = dateString.text.split(" ~ ")
             val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
 
-            val datetext = LocalDate.parse(dateParts[0].trim(), formatter)
-            val startPage = page1.text.toString().toInt()
-            val endPage = page2.text.toString().toInt()
+            val datetext = LocalDate.parse(dateString.text.toString(),formatter)
+            val startPage = page1.text.toString().toIntOrNull() ?: 0
+            val endPage = page2.text.toString().toIntOrNull() ?: 0
             val log1 = log1.text.toString()
-            val log1page = log1page.text.toString().toInt()
+            val log1page = log1page.text.toString().toIntOrNull() ?: 0
             val log2 = log2.text.toString()
             val log3 = selectedImageUri?.toString()
             val reviewItem: Parcelable =
                 ReviewItem(title, datetext, startPage, endPage, log1, log1page, log2, log3)
 
+            val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("editedreview", reviewItem)
             intent.putExtra("position", position)
             setResult(Activity.RESULT_OK, intent)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             finish()
         }
 
