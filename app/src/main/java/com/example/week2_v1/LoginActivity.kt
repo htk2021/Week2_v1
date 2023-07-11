@@ -82,7 +82,6 @@ class LoginActivity : AppCompatActivity() {
         }
 
         val kakao_login_button = findViewById<ImageButton>(R.id.kakao_login_button) // 로그인 버튼
-
         kakao_login_button.setOnClickListener {
             if(UserApiClient.instance.isKakaoTalkLoginAvailable(this)){
                 UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
@@ -91,9 +90,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-
         val join_button = findViewById<ImageButton>(R.id.join_application) // 로그인 버튼
-
         binding.joinApplication.setOnClickListener {
             val intent = Intent(this, JoinActivity::class.java)
             startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
@@ -106,7 +103,6 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             finish()
         }
-
 
         binding.emailLoginButton.setOnClickListener {
             val intent = Intent(this, LoginEmailActivity::class.java)

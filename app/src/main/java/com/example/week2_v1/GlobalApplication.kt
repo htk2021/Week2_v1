@@ -7,6 +7,7 @@ import com.kakao.sdk.common.KakaoSdk
 class GlobalApplication : Application() {
     companion object{
         var appContext: Context? = null
+        var loggedInUser: String? = null
     }
     override fun onCreate() {
         super.onCreate()

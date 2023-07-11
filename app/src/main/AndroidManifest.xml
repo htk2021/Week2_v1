@@ -49,6 +49,9 @@
         <activity android:name=".SecondActivity" />
         <activity android:name=".JoinActivity" />
         <activity android:name=".LoginEmailActivity" />
+        <activity android:name=".SearchActivity" />
+        <activity android:name=".DetailPageActivity" />
+        <activity android:name=".FriendsListActivity" />
 
     </application>
 

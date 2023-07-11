@@ -45,7 +45,7 @@ class LoginEmailActivity : AppCompatActivity() {
     }
 
     private fun CheckMySQL(email: String, password: String) {
-        val url = "https://swift-grapes-decide.loca.lt/checkUser" // MySQL 서버 URL
+        val url = "https://beige-hounds-clean.loca.lt/checkUser" // MySQL 서버 URL
 
         val json = """
         {
@@ -69,7 +69,9 @@ class LoginEmailActivity : AppCompatActivity() {
                     // 사용자 정보 저장 성공
                     runOnUiThread {
                         Toast.makeText(this@LoginEmailActivity, "로그인이 완료되었습니다.", Toast.LENGTH_SHORT).show()
-                        // 회원가입 완료 후 다음 작업 수행
+
+                        GlobalApplication.loggedInUser=email
+
                         val intent = Intent(this@LoginEmailActivity, MainActivity::class.java)
                         startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                         finish()
