@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.week2_v1.Addpage_activity
 import com.example.week2_v1.Editpage_activity
+import com.example.week2_v1.FriendsListActivity
 import com.example.week2_v1.MainActivity
 import com.example.week2_v1.R
 import com.example.week2_v1.SecondActivity
@@ -61,6 +62,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         mreviewItems = loadReviewItems()
         val dashboardViewModel =
             ViewModelProvider(this).get(ProfileViewModel::class.java)
@@ -89,6 +91,14 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
             val intent = Intent(requireActivity(), Setting::class.java)
             startActivityForResult(intent,10)
         }
+
+        //황태경 추가
+        val followerTextView: TextView = root.findViewById(R.id.follower)
+        followerTextView.setOnClickListener {
+            val intent = Intent(requireActivity(), FriendsListActivity::class.java)
+            startActivity(intent)
+        } //여기까지
+
         return root
     }
     @RequiresApi(Build.VERSION_CODES.O)

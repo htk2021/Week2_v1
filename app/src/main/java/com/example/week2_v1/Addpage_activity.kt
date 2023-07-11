@@ -52,6 +52,26 @@ class Addpage_activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_addpage)
 
+        //황태경 추가
+        searchButton = findViewById(R.id.editTitle)
+        searchButton.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+            finish()
+        }
+        titleTextView = findViewById(R.id.title)
+        authorTextView = findViewById(R.id.author)
+        descriptionTextView = findViewById(R.id.bookdetail)
+        imageView = findViewById(R.id.poster)
+        val item = intent.getSerializableExtra("item") as? Item
+        item?.let {
+            titleTextView.text = item.title
+            authorTextView.text = item.author
+            descriptionTextView.text = item.description
+            Glide.with(this)
+                .load(item.image)
+                .into(imageView)
+        }
 
 
         // Get EditText instances
@@ -180,38 +200,4 @@ class Addpage_activity : AppCompatActivity() {
             }
         }
     }
-
-
-
-        //황태경 추가
-        searchButton = findViewById(R.id.editTitle)
-        searchButton.setOnClickListener {
-            val intent = Intent(this, SearchActivity::class.java)
-            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-            finish()
-        }
-        titleTextView = findViewById(R.id.title)
-        authorTextView = findViewById(R.id.author)
-        descriptionTextView = findViewById(R.id.bookdetail)
-        imageView = findViewById(R.id.poster)
-        val item = intent.getSerializableExtra("item") as? Item
-        item?.let {
-            titleTextView.text = item.title
-            authorTextView.text = item.author
-            descriptionTextView.text = item.description
-            Glide.with(this)
-                .load(item.image)
-                .into(imageView)
-        }
-
-
-        val dateString = findViewById<TextView>(R.id.time)
-        val page1 = findViewById<EditText>(R.id.page1)
-        val page2 = findViewById<EditText>(R.id.page2)
-        val log1 = findViewById<EditText>(R.id.log1)
-        val log1page = findViewById<EditText>(R.id.log1page)
-        val log2 = findViewById<EditText>(R.id.log2)
-        val log3 = findViewById<ImageView>(R.id.log3)
-    }
-
 }
