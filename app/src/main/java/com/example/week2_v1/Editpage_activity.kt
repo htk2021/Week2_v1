@@ -1,5 +1,5 @@
 package com.example.week2_v1
-import android.app.Activity
+
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
@@ -23,6 +23,14 @@ import com.example.week2_v1.ui.profile.ReviewItem
 import com.example.week2_v1.ui.profile.detail_review
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.json.JSONArray
+import org.json.JSONException
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -31,6 +39,12 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
+import android.app.Activity
+import android.widget.Toast
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import java.net.URLEncoder
+import kotlin.properties.Delegates
 
 class Editpage_activity : AppCompatActivity() {
     private val calendar = Calendar.getInstance()
@@ -44,6 +58,7 @@ class Editpage_activity : AppCompatActivity() {
     private lateinit var authorTextView: TextView
     private lateinit var descriptionTextView: TextView
     private lateinit var imageView: ImageView
+    private var id by Delegates.notNull<Int>()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,10 +90,7 @@ class Editpage_activity : AppCompatActivity() {
                 .into(imageView)
         }
 
-        val title = findViewById<TextView>(R.id.title)
-        val author = findViewById<TextView>(R.id.author)
-        val poster = findViewById<ImageView>(R.id.poster)
-        val bookdetail = findViewById<TextView>(R.id.bookdetail)
+
         val dateString = findViewById<TextView>(R.id.time)
         val page1 = findViewById<EditText>(R.id.page1)
         val page2 = findViewById<EditText>(R.id.page2)
@@ -95,21 +107,65 @@ class Editpage_activity : AppCompatActivity() {
         }
 
 
-        val editedReviewItem = intent.getParcelableExtra<ReviewItem>("editedreview")
-        val position = intent.getIntExtra("position", -1)
-        if (editedReviewItem != null) {
-            // Initialize the fields with the review item
-            title.setText(editedReviewItem.title)
-            page1.setText(editedReviewItem.startPage.toString())
-            page2.setText(editedReviewItem.endPage.toString())
-            log1.setText(editedReviewItem.log1)
-            log1page.setText(editedReviewItem.log1page.toString())
-            log2.setText(editedReviewItem.log2)
-            val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
-            val DateString = editedReviewItem.date?.format(formatter)
-            dateString.text = "$DateString"
+        val url = "https://witty-shoes-suffer.loca.lt/editreviewsstart?userId=$id"  // 로드
+        val request = Request.Builder()
+            .url(url)
+            .method("GET", null)
+            .build()
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    // API 요청 실패 처리
+                    // 에러 처리 로직 구현
+                }
+            }
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                if (response.isSuccessful && responseBody != null) {
+                    runOnUiThread {
+                        try {
+                            val reviewsArray = JSONArray(responseBody)
+                            for (i in 0 until reviewsArray.length()) {
+                                val reviewJson = reviewsArray.getJSONObject(i)
+                                val title1 = reviewJson.getString("title")
+                                val author1 = reviewJson.getString("author")
+                                val readDate = reviewJson.getString("read_date")
+                                val photo = reviewJson.getString("photo")
+                                val start_page = reviewJson.getInt("start_page")
+                                val end_page = reviewJson.getInt("end_page")
+                                val memorable_page = reviewJson.getInt("memorable_page")
+                                val memorable_quote = reviewJson.getString("memorable_quote")
+                                val comment = reviewJson.getString("comment")
 
-        }
+
+
+                                titleTextView.text = title1
+                                authorTextView.text = author1
+                                Glide.with(this@Editpage_activity).load(photo).into(imageView)
+                                page1.setText(start_page.toString())
+                                page2.setText(end_page.toString())
+                                log1.setText(memorable_quote)
+                                log1page.setText(memorable_page.toString())
+                                log2.setText(comment)
+                                Glide.with(this@Editpage_activity)
+                                    .load(photo)
+                                    .into(log3)
+                                val formatter =
+                                    DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
+                                val DateString = LocalDate.parse(readDate).format(formatter)
+                                dateString.text = "$DateString"
+                            }
+
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            }
+        })
+
+
         log3.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
@@ -122,9 +178,9 @@ class Editpage_activity : AppCompatActivity() {
         // Get Button instance and set listener
         val addbutton = findViewById<Button>(R.id.addbutton)
         addbutton.setOnClickListener {
-            val title = title.text.toString()
+            val title = titleTextView.text.toString()
+            val author = authorTextView.text.toString()
             val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
-
             val datetext = LocalDate.parse(dateString.text.toString(),formatter)
             val startPage = page1.text.toString().toIntOrNull() ?: 0
             val endPage = page2.text.toString().toIntOrNull() ?: 0
@@ -132,12 +188,63 @@ class Editpage_activity : AppCompatActivity() {
             val log1page = log1page.text.toString().toIntOrNull() ?: 0
             val log2 = log2.text.toString()
             val log3 = selectedImageUri?.toString()
-            val reviewItem: Parcelable =
-                ReviewItem(title, datetext, startPage, endPage, log1, log1page, log2, log3)
+            val loggedInUser = GlobalApplication.loggedInUser ?: ""
+
+            val addReviewUrl = "https://witty-shoes-suffer.loca.lt/editreviewsend" // 저장
+            // Get Button instance and set listener
+
+
+            // 리뷰 데이터를 JSON 형식으로 생성
+            val reviewData = """
+    {
+        "title": "$title",
+        "author": "$author",
+        "photo": "$log3",
+        "read_date": "$datetext",
+        "start_page": $startPage,
+        "end_page": $endPage,
+        "memorable_page": $log1page,
+        "memorable_quote": "$log1",
+        "comment": "$log2",
+        "reader": "$loggedInUser",
+        "id":"$id"
+    }
+""".trimIndent()
+
+            // OkHttp를 사용하여 POST 요청을 전송
+            val client = OkHttpClient()
+            val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), reviewData)
+            val request = Request.Builder()
+                .url(addReviewUrl)
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    // 요청 실패
+                    runOnUiThread {
+                        // 실패 처리 로직을 구현하세요
+                        Toast.makeText(this@Editpage_activity, "실패.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    // 요청 성공
+                    runOnUiThread {
+                        // 성공 처리 로직을 구현하세요
+                        val intent = Intent(this@Editpage_activity, MainActivity::class.java)
+                        startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                        finish()
+                    }
+                }
+            })
+
+
+
+
+
 
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("editedreview", reviewItem)
-            intent.putExtra("position", position)
             setResult(Activity.RESULT_OK, intent)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             finish()
@@ -182,6 +289,17 @@ class Editpage_activity : AppCompatActivity() {
             // 이미지 선택 결과를 받음
             selectedImageUri = data.data
         }
+        if (requestCode == 33 && resultCode == RESULT_OK && data != null) {
+            val editedReview = data.getParcelableExtra<ReviewItem>("editedreview")
+            val position = data.getIntExtra("position", -1)
+            id = editedReview!!.id.toInt()
+
+            // 여기서 editedReview와 position을 사용하는 코드를 작성하면 됩니다.
+            // 예를 들면, 업데이트된 리뷰를 리스트에 반영하는 등의 작업이 될 수 있습니다.
+        }
+
+
+
     }
 
 

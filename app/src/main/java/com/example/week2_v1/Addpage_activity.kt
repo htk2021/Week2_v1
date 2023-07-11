@@ -110,7 +110,7 @@ class Addpage_activity : AppCompatActivity() {
             startActivityForResult(intent, 55)
         }
 
-        val addReviewUrl = "https://famous-parrots-feel.loca.lt/reviews"
+        val addReviewUrl = "https://witty-shoes-suffer.loca.lt/reviews"
         // Get Button instance and set listener
         val addbutton = findViewById<Button>(R.id.addbutton)
         addbutton.setOnClickListener {
@@ -171,31 +171,31 @@ class Addpage_activity : AppCompatActivity() {
         }
 
         // Set up DatePickerDialog
-                val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select a date")
-                .setCalendarConstraints(
-                    CalendarConstraints.Builder()
-                        .setValidator(SingleDateValidator(LocalDate.now(), null))
-                        .build()
-                )
-                .build()
+        val datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Select a date")
+            .setCalendarConstraints(
+                CalendarConstraints.Builder()
+                    .setValidator(SingleDateValidator(LocalDate.now(), null))
+                    .build()
+            )
+            .build()
 
-            val datebutton = findViewById<Button>(R.id.datebutton)  // DatePicker 대신 Button으로 변경했습니다.
-            datebutton.setOnClickListener {
-                datePicker.show(supportFragmentManager, "date_picker")
+        val datebutton = findViewById<Button>(R.id.datebutton)  // DatePicker 대신 Button으로 변경했습니다.
+        datebutton.setOnClickListener {
+            datePicker.show(supportFragmentManager, "date_picker")
+        }
+
+        datePicker.addOnPositiveButtonClickListener { selection ->
+            val selectedMillis = selection ?: return@addOnPositiveButtonClickListener
+
+            val selectedCalendar = Calendar.getInstance().apply {
+                timeInMillis = selectedMillis
             }
 
-            datePicker.addOnPositiveButtonClickListener { selection ->
-                val selectedMillis = selection ?: return@addOnPositiveButtonClickListener
-
-                val selectedCalendar = Calendar.getInstance().apply {
-                    timeInMillis = selectedMillis
-                }
-
-                val selectedDate = LocalDate.of(
-                    selectedCalendar.get(Calendar.YEAR),
-                    selectedCalendar.get(Calendar.MONTH) + 1,
-                    selectedCalendar.get(Calendar.DAY_OF_MONTH)
+            val selectedDate = LocalDate.of(
+                selectedCalendar.get(Calendar.YEAR),
+                selectedCalendar.get(Calendar.MONTH) + 1,
+                selectedCalendar.get(Calendar.DAY_OF_MONTH)
             )
             val selectedDateString =
                 selectedDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))

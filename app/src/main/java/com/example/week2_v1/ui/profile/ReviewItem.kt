@@ -16,7 +16,8 @@ data class ReviewItem(
     var log1: String?,
     var log1page: Int?,
     var log2: String?,
-    var log3: String?
+    var log3: String?,
+    val id: Int
 ) : Parcelable {
     @RequiresApi(Build.VERSION_CODES.O)
     constructor(parcel: Parcel) : this(
@@ -27,7 +28,8 @@ data class ReviewItem(
         parcel.readString(),
         parcel.readValue(Int::class.java.classLoader) as? Int, // Change this
         parcel.readString(),
-        parcel.readString()
+        parcel.readString(),
+        parcel.readInt()
     )
 
     @RequiresApi(Build.VERSION_CODES.O)

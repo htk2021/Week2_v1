@@ -164,7 +164,8 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
                                     log1 = log1,
                                     log1page = log1page,
                                     log2 = log2,
-                                    log3 = log3
+                                    log3 = log3,
+                                    id = id
                                     // 필요한 다른 데이터 전달
                                 )
 
