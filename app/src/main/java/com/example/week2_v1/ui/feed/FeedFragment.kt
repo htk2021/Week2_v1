@@ -57,6 +57,7 @@ class FeedFragment : Fragment(),MyRecyclerAdapter.ItemClickListener{
             ViewModelProvider(this).get(FeedViewModel::class.java)
 
         _binding = FragmentFeedActivityBinding.inflate(inflater, container, false)
+
         val root: View = binding.root
         val search = root.findViewById<EditText>(R.id.input_friend)
         search.setOnClickListener{

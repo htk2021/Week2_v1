@@ -54,12 +54,10 @@ class FriendSearch : AppCompatActivity() {
             hideKeyboard()
 
             val encodedQuery = URLEncoder.encode(query, "UTF-8")
-            val url = "https://openapi.naver.com/v1/search/book.json?query=$encodedQuery&display=10&start=1"
+            val url = "https://short-poets-clean.loca.lt/alluser?userName=$encodedQuery&display=10&start=1"
 
             val request = Request.Builder()
                 .url(url)
-                .addHeader("X-Naver-Client-Id", clientId)
-                .addHeader("X-Naver-Client-Secret", clientSecret)
                 .method("GET", null)
                 .build()
             // 전체 유저를 띄우는데, 이름이 매치될수록 상위권에 배치
