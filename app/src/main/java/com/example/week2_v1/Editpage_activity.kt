@@ -3,6 +3,7 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
@@ -32,45 +33,28 @@ import kotlin.math.roundToInt
 
 class Editpage_activity : AppCompatActivity() {
     private val calendar = Calendar.getInstance()
-    private lateinit var date: TextView
-    private var startDate: LocalDate? = null
-    private var endDate: LocalDate? = null
+    private lateinit var datetext: TextView
+    private var date: LocalDate? = null
     private val ADD_PAGE_REQUEST_CODE = 123
+    private var selectedImageUri: Uri? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editpage)
 
-        // Get RatingBar instance and set listener
-        val ratingbar: RatingBar = findViewById(R.id.ratingbarStyle)
-        ratingbar.setOnRatingBarChangeListener(Listener())
-        val rating: Float = ratingbar.rating
-
-        // Get EditText instances
-        val editTitle = findViewById<EditText>(R.id.editTitle)
-        val editMessage = findViewById<EditText>(R.id.editMessage)
-        val dateString = findViewById<TextView>(R.id.time)
-
-        val editedReviewItem = intent.getParcelableExtra<ReviewItem>("editedreview")
-        val position = intent.getIntExtra("position", -1)
-        if (editedReviewItem != null) {
-            // Initialize the fields with the review item
-            editTitle.setText(editedReviewItem.title)
-            editMessage.setText(editedReviewItem.message)
-            ratingbar.rating = editedReviewItem.star?.toFloat() ?: 0.0f
-
-            // Format the dates and set them to the TextView
-            val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
-            val startDateString = editedReviewItem.startDate?.format(formatter)
-            val endDateString = editedReviewItem.endDate?.format(formatter)
-            dateString.text = "$startDateString ~ $endDateString"
-        }
-
-
-        // Get ImageView instance and set listener
+        val title = findViewById<TextView>(R.id.title)
+        val author = findViewById<TextView>(R.id.author)
         val poster = findViewById<ImageView>(R.id.poster)
-        poster.setOnClickListener {
+        val bookdetail = findViewById<TextView>(R.id.bookdetail)
+        val dateString = findViewById<TextView>(R.id.time)
+        val page1 = findViewById<EditText>(R.id.page1)
+        val page2 = findViewById<EditText>(R.id.page2)
+        val log1 = findViewById<EditText>(R.id.log1)
+        val log1page = findViewById<EditText>(R.id.log1page)
+        val log2 = findViewById<EditText>(R.id.log2)
+        val log3 = findViewById<ImageView>(R.id.log3)
+        log3.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             val mimeTypes = arrayOf("image/jpeg", "image/png")
@@ -78,69 +62,90 @@ class Editpage_activity : AppCompatActivity() {
             startActivityForResult(intent, 55)
         }
 
+
+        val editedReviewItem = intent.getParcelableExtra<ReviewItem>("editedreview")
+        val position = intent.getIntExtra("position", -1)
+        if (editedReviewItem != null) {
+            // Initialize the fields with the review item
+            title.setText(editedReviewItem.title)
+            page1.setText(editedReviewItem.startPage.toString())
+            page2.setText(editedReviewItem.endPage.toString())
+            log1.setText(editedReviewItem.log1)
+            log1page.setText(editedReviewItem.log1page.toString())
+            log2.setText(editedReviewItem.log2)
+            val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
+            val DateString = editedReviewItem.date?.format(formatter)
+            dateString.text = "$DateString"
+
+        }
+
+
         // Get Button instance and set listener
         val addbutton = findViewById<Button>(R.id.addbutton)
         addbutton.setOnClickListener {
-            val title = editTitle.text.toString()
-            val message = editMessage.text.toString()
-            val star = ratingbar.rating.roundToInt()
+            val title = title.text.toString()
             val dateParts = dateString.text.split(" ~ ")
             val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
 
-            val startDate1 = LocalDate.parse(dateParts[0].trim(), formatter)
-            val endDate1 = LocalDate.parse(dateParts[1].trim(), formatter)
+            val datetext = LocalDate.parse(dateParts[0].trim(), formatter)
+            val startPage = page1.text.toString().toInt()
+            val endPage = page2.text.toString().toInt()
+            val log1 = log1.text.toString()
+            val log1page = log1page.text.toString().toInt()
+            val log2 = log2.text.toString()
+            val log3 = selectedImageUri?.toString()
+            val reviewItem: Parcelable =
+                ReviewItem(title, datetext, startPage, endPage, log1, log1page, log2, log3)
 
-            val reviewItem = ReviewItem(title, startDate1, endDate1, message, star)
-            Log.d("ReviewItem", "Start Date: ${reviewItem.startDate}, End Date: ${reviewItem.endDate}")
-
-
-            val intent = Intent(this, detail_review::class.java)
             intent.putExtra("editedreview", reviewItem)
-            intent.putExtra("position", intent.getIntExtra("position", -1))
+            intent.putExtra("position", position)
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
 
-        // Get TextView instance
-        date = findViewById<TextView>(R.id.time)
-
         // Set up DatePickerDialog
-        val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-            .setTitleText("Select dates")
+        val datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Select a date")
             .setCalendarConstraints(
                 CalendarConstraints.Builder()
-                    .setValidator(RangeValidator(LocalDate.now(), null))
-                    .build())
+                    .setValidator(Addpage_activity.SingleDateValidator(LocalDate.now(), null))
+                    .build()
+            )
             .build()
 
-        val datebutton = findViewById<DatePicker>(R.id.datebutton)
+        val datebutton = findViewById<Button>(R.id.datebutton)  // DatePicker 대신 Button으로 변경했습니다.
         datebutton.setOnClickListener {
-            dateRangePicker.show(supportFragmentManager, "date_range_picker")
+            datePicker.show(supportFragmentManager, "date_picker")
         }
 
-        dateRangePicker.addOnPositiveButtonClickListener { selection ->
-            val selectionPair = selection as androidx.core.util.Pair<Long, Long>
-            val startMillis = selectionPair.first ?: return@addOnPositiveButtonClickListener
-            val endMillis = selectionPair.second ?: return@addOnPositiveButtonClickListener
+        datePicker.addOnPositiveButtonClickListener { selection ->
+            val selectedMillis = selection ?: return@addOnPositiveButtonClickListener
 
-            val startCalendar = Calendar.getInstance().apply {
-                timeInMillis = startMillis
-            }
-            val endCalendar = Calendar.getInstance().apply {
-                timeInMillis = endMillis
+            val selectedCalendar = Calendar.getInstance().apply {
+                timeInMillis = selectedMillis
             }
 
-            startDate = LocalDate.of(startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH) + 1, startCalendar.get(Calendar.DAY_OF_MONTH))
-            endDate = LocalDate.of(endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH) + 1, endCalendar.get(Calendar.DAY_OF_MONTH))
+            val selectedDate = LocalDate.of(
+                selectedCalendar.get(Calendar.YEAR),
+                selectedCalendar.get(Calendar.MONTH) + 1,
+                selectedCalendar.get(Calendar.DAY_OF_MONTH)
+            )
+            val selectedDateString =
+                selectedDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+            dateString.text = selectedDateString
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-            val startDateString = startDate?.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
-            val endDateString = endDate?.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
-            date.text = "$startDateString ~ $endDateString"
+        if (requestCode == 55 && resultCode == RESULT_OK && data != null) {
+            // 이미지 선택 결과를 받음
+            selectedImageUri = data.data
         }
     }
 
 
-    class RangeValidator(private val minDate: LocalDate, private val maxDate: LocalDate?) : CalendarConstraints.DateValidator, Parcelable {
+    class SingleDateValidator(private val minDate: LocalDate, private val maxDate: LocalDate?) : CalendarConstraints.DateValidator, Parcelable {
         @RequiresApi(Build.VERSION_CODES.O)
         constructor(parcel: Parcel) : this(
             LocalDate.ofEpochDay(parcel.readLong()),
@@ -158,29 +163,22 @@ class Editpage_activity : AppCompatActivity() {
             parcel.writeLong(minDate.toEpochDay())
             parcel.writeLong(maxDate?.toEpochDay() ?: -1L)
         }
-
         override fun describeContents(): Int {
             return 0
         }
 
         companion object {
             @JvmField
-            val CREATOR: Parcelable.Creator<RangeValidator> = object : Parcelable.Creator<RangeValidator> {
+            val CREATOR: Parcelable.Creator<SingleDateValidator> = object : Parcelable.Creator<SingleDateValidator> {
                 @RequiresApi(Build.VERSION_CODES.O)
-                override fun createFromParcel(parcel: Parcel): RangeValidator {
-                    return RangeValidator(parcel)
+                override fun createFromParcel(parcel: Parcel): SingleDateValidator {
+                    return SingleDateValidator(parcel)
                 }
 
-                override fun newArray(size: Int): Array<RangeValidator?> {
+                override fun newArray(size: Int): Array<SingleDateValidator?> {
                     return arrayOfNulls(size)
                 }
             }
-        }
-    }
-
-    internal class Listener : OnRatingBarChangeListener {
-        override fun onRatingChanged(ratingBar: RatingBar, rating: Float, fromUser: Boolean) {
-
         }
     }
 }
