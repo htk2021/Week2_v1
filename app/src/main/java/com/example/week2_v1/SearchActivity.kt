@@ -119,6 +119,7 @@ class SearchAdapter(private val items: List<Item>) : RecyclerView.Adapter<Search
                 val intent = Intent(context, DetailPageActivity::class.java)
                 intent.putExtra("item", item)
                 context.startActivity(intent)
+                (context as? AppCompatActivity)?.finish()
             }
         }
 

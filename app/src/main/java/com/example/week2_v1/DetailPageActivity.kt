@@ -51,6 +51,7 @@ class DetailPageActivity : AppCompatActivity() {
                 val intent = Intent(this, Addpage_activity::class.java)
                 intent.putExtra("item", item)
                 startActivity(intent)
+                finish()
             }
         }
     }

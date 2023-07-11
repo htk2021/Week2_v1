@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -183,7 +184,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         val dialog = Dialog(requireContext(), android.R.style.Theme_Light_NoTitleBar_Fullscreen)
         button.setOnClickListener {
             val intent = Intent(requireActivity(), Editpage_activity::class.java)
-            intent.putExtra("editedreview", item)
+            intent.putExtra("editedreview", item as Parcelable)
             intent.putExtra("position", position)
             startActivityForResult(intent, 33)
         }
