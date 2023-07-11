@@ -51,13 +51,16 @@ class Addpage_activity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_addpage)
+
         //황태경 추가
         searchButton = findViewById(R.id.editTitle)
         searchButton.setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java)
+
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(intent)
             Log.d("AddpageActivity", "Going to SearchActivity")
+
             finish()
         }
         titleTextView = findViewById(R.id.title)
@@ -73,6 +76,7 @@ class Addpage_activity : AppCompatActivity() {
                 .load(item.image)
                 .into(imageView)
         }
+
 
         // Get EditText instances
         val title = findViewById<TextView>(R.id.title)

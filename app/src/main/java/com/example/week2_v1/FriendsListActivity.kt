@@ -43,10 +43,13 @@ class FriendsListActivity : AppCompatActivity() {
 
     private fun getFriendshipsFromServer() {
         val userEmail = GlobalApplication.loggedInUser ?: ""
-        val url = "https://beige-hounds-clean.loca.lt/friendsofuser?userEmail=$userEmail"
+        Log.d("계정주인", "$userEmail")
+        val encodedUserEmail = URLEncoder.encode(userEmail, "UTF-8")
+        val url = "https://short-poets-clean.loca.lt/friendsofuser?userEmail=$encodedUserEmail"
 
         val request = Request.Builder()
             .url(url)
+            .method("GET", null)
             .build()
 
         val client = OkHttpClient()
@@ -73,7 +76,7 @@ class FriendsListActivity : AppCompatActivity() {
 class FriendsListAdapter(private val friendships: List<Friendship>) : RecyclerView.Adapter<FriendsListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.search_recyclerview, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.friends_recyclerview, parent, false)
         return ViewHolder(view)
     }
 
