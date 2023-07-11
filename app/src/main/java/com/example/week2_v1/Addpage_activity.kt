@@ -56,7 +56,11 @@ class Addpage_activity : AppCompatActivity() {
         searchButton = findViewById(R.id.editTitle)
         searchButton.setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java)
-            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            startActivity(intent)
+            Log.d("AddpageActivity", "Going to SearchActivity")
+
             finish()
         }
         titleTextView = findViewById(R.id.title)
@@ -118,7 +122,9 @@ class Addpage_activity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             Log.d("why..itemadd","$reviewItem")
             intent.putExtra("newreview", reviewItem)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             setResult(Activity.RESULT_OK, intent)
+            Log.d("NpsearchActivity!!", "Going to SearchActivity")
             finish()
         }
 
