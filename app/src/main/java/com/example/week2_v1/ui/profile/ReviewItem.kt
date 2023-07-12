@@ -17,7 +17,9 @@ data class ReviewItem(
     var log1page: Int?,
     var log2: String?,
     var log3: String?,
-    val id: Int
+
+    var id : Int
+
 ) : Parcelable {
     @RequiresApi(Build.VERSION_CODES.O)
     constructor(parcel: Parcel) : this(

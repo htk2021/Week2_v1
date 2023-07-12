@@ -45,7 +45,7 @@ class LoginEmailActivity : AppCompatActivity() {
     }
 
     private fun CheckMySQL(email: String, password: String) {
-        val url = "https://famous-parrots-feel.loca.lt/checkUser" // MySQL 서버 URL
+        val url = GlobalApplication.v_url+"/checkUser" // MySQL 서버 URL
 
         val json = """
         {

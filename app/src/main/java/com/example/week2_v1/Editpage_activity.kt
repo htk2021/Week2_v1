@@ -107,7 +107,8 @@ class Editpage_activity : AppCompatActivity() {
         }
 
 
-        val url = "https://witty-shoes-suffer.loca.lt/editreviewsstart?userId=$id"  // 로드
+        val url = GlobalApplication.v_url+"/editreviewsstart?userId=$id"  // 로드
+
         val request = Request.Builder()
             .url(url)
             .method("GET", null)
@@ -190,7 +191,9 @@ class Editpage_activity : AppCompatActivity() {
             val log3 = selectedImageUri?.toString()
             val loggedInUser = GlobalApplication.loggedInUser ?: ""
 
-            val addReviewUrl = "https://witty-shoes-suffer.loca.lt/editreviewsend" // 저장
+
+            val addReviewUrl = GlobalApplication.v_url+"/editreviewsend" // 저장
+
             // Get Button instance and set listener
 
 

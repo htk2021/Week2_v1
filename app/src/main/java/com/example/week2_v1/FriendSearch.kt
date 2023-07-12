@@ -5,37 +5,38 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.week2_v1.databinding.ActivitySearchBinding
+import com.example.week2_v1.databinding.ActivityFriendSearchBinding
 import com.example.week2_v1.databinding.SearchRecyclerviewBinding
 import com.google.gson.GsonBuilder
 import okhttp3.*
 import java.io.IOException
 import java.io.Serializable
 import java.net.URLEncoder
+import java.sql.Blob
 
-class SearchActivity : AppCompatActivity() {
+class FriendSearch : AppCompatActivity() {
 
-    private val clientId = "GpcrHzcJDuOme8mLdoyt"
-    private val clientSecret = "xSG6F2STlR"
-
-    private lateinit var binding: ActivitySearchBinding
-    private lateinit var searchAdapter: SearchAdapter
+    private lateinit var binding: ActivityFriendSearchBinding
+    private lateinit var searchAdapter: UserSearchAdapter
 
     private val client = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
+        binding = ActivityFriendSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupViews()
@@ -51,23 +52,23 @@ class SearchActivity : AppCompatActivity() {
             hideKeyboard()
 
             val encodedQuery = URLEncoder.encode(query, "UTF-8")
-            val url = "https://openapi.naver.com/v1/search/book.json?query=$encodedQuery&display=10&start=1"
+            val url = GlobalApplication.v_url+"/alluser/$query"
 
             val request = Request.Builder()
                 .url(url)
-                .addHeader("X-Naver-Client-Id", clientId)
-                .addHeader("X-Naver-Client-Secret", clientSecret)
-                .method("POST", null)
+                .method("GET", null)
                 .build()
+            // 전체 유저를 띄우는데, 이름이 매치될수록 상위권에 배치
 
             client.newCall(request).enqueue(object : Callback {
 
                 override fun onResponse(call: Call, response: Response) {
                     val body = response.body?.string()
-                    val homefeed = GsonBuilder().create().fromJson(body, Homefeed::class.java)
+                    Log.d("Body", "$body")
+                    val users = GsonBuilder().create().fromJson(body, Array<User>::class.java).toList()
 
                     runOnUiThread {
-                        showSearchResults(homefeed.items ?: emptyList())
+                        showSearchResults(users)
                     }
                 }
 
@@ -80,12 +81,12 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun showSearchResults(items: List<Item>) {
+    private fun showSearchResults(items: List<User>) {
         binding.rv.layoutManager = LinearLayoutManager(this)
-        searchAdapter = SearchAdapter(items)
+        searchAdapter = UserSearchAdapter(items)
         binding.rv.adapter = searchAdapter
 
-        Log.d("SearchActivity", "Search Results: $items")
+        Log.d("FriendSearchActivity", "Search Results: $items")
     }
 
     private fun hideKeyboard() {
@@ -94,50 +95,37 @@ class SearchActivity : AppCompatActivity() {
     }
 }
 
-class SearchAdapter(private val items: List<Item>) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
+data class UserGroup (val items : List<User>)
+data class User(
+    val name: String,
+    val email: String,
+    val image: Blob?
+) : Serializable
+
+class UserSearchAdapter(private val users: List<User>) : RecyclerView.Adapter<UserSearchAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = SearchRecyclerviewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.friends_recyclerview, parent, false)
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
+        val user = users[position]
+        holder.name.text = user.name
+        holder.email.text = user.email
+
+        Glide.with(holder.itemView.context)
+            .load(user.image)
+            .into(holder.imageView)
     }
 
     override fun getItemCount(): Int {
-        return items.size
+        return users.size
     }
 
-    inner class ViewHolder(private val binding: SearchRecyclerviewBinding) : RecyclerView.ViewHolder(binding.root) {
-        private val imageView: ImageView = binding.rvImage
-
-        init {
-            binding.root.setOnClickListener {
-                val item = items[adapterPosition]
-                val context = itemView.context
-                val intent = Intent(context, DetailPageActivity::class.java)
-                intent.putExtra("item", item)
-                context.startActivity(intent)
-                (context as? AppCompatActivity)?.finish()
-            }
-        }
-
-        fun bind(item: Item) {
-            Glide.with(itemView)
-                .load(item.image)
-                .into(imageView)
-            binding.rvTitle.text = item.title
-            binding.rvAuthor.text = item.author
-            // Bind other item properties as needed
-        }
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val name: TextView = view.findViewById(R.id.rv_name)
+        val email: TextView = view.findViewById(R.id.rv_email)
+        val imageView: ImageView = view.findViewById(R.id.rv_image)
     }
 }
-
-data class Homefeed (val items : List<Item>)
-data class Item(
-    val image : String,
-    val title : String,
-    val author : String,
-    val description: String
-) : Serializable
