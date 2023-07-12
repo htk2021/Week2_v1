@@ -97,13 +97,6 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
-        val just_develop_button = findViewById<Button>(R.id.developer) // 로그인 버튼
-        just_develop_button.setOnClickListener{
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-            finish()
-        }
-
         binding.emailLoginButton.setOnClickListener {
             val intent = Intent(this, LoginEmailActivity::class.java)
             startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))

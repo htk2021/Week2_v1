@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Kaistagram</string>
+    <string name="app_name">읽을래요</string>
     <string name="title_feed">Feed</string>
     <string name="title_profile">Profile</string>
     <string name="title_search">Search</string>
