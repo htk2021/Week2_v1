@@ -150,11 +150,15 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
                                 val log2 = reviewJson.getString("comment")
                                 val log3 = reviewJson.getString("photo")
                                 val id = reviewJson.getInt("id")
+                                val readerName = reviewJson.getString("name")
+                                val readerImage = reviewJson.getString("image")
+
                                 // 필요한 다른 데이터도 가져와서 ReviewItem에 추가
                                 //후기에 띄워놓지 않더라도 일단 받아왔음
 
                                 val reviewItem = ReviewItem(
                                     title = title,
+                                    author = author,
                                     date = readDate,
                                     startPage = startPage,
                                     endPage = endPage,
@@ -162,8 +166,11 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
                                     log1page = log1page,
                                     log2 = log2,
                                     log3 = log3,
-                                    id = id
+                                    id = id,
                                     // 필요한 다른 데이터 전달
+                                    reader = GlobalApplication.loggedInUser,
+                                    readerName = readerName,
+                                    readerImage = readerImage
                                 )
 
                                 mreviewItems.add(reviewItem)

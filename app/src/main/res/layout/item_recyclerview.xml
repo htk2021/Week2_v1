@@ -22,7 +22,7 @@
             android:scaleType="centerCrop"
             android:alpha="0.5"
             android:layout_centerHorizontal="true"
-            android:fontFamily="@font/KOTRA_HOPE"/>
+            android:fontFamily="@font/kotra_hope"/>
 
         <TextView
             android:id="@+id/log1"
@@ -32,7 +32,7 @@
             android:gravity="center"
             android:textSize="20sp"
             android:textColor="#FFFFFF"
-            android:fontFamily="@font/KOTRA_HOPE"/>
+            android:fontFamily="@font/kotra_hope"/>
         <TextView
             android:id="@+id/time"
             android:layout_width="match_parent"

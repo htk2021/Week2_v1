@@ -61,7 +61,7 @@
                 android:textSize="20sp"
                 android:gravity="center"
                 android:ems="10"
-                android:fontFamily="@font/KOTRA_HOPE"
+                android:fontFamily="@font/kotra_hope"
                 android:layout_centerHorizontal="true"
                 />
         </RelativeLayout>
