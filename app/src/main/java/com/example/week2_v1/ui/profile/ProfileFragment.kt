@@ -32,7 +32,6 @@ import com.example.week2_v1.GlobalApplication
 import com.example.week2_v1.MainActivity
 import com.example.week2_v1.R
 import com.example.week2_v1.SecondActivity
-import com.example.week2_v1.databinding.ActivityAddpageBinding
 import com.example.week2_v1.databinding.FragmentProfileActivityBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import okhttp3.Call
@@ -52,7 +51,11 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyclerAdapter.ItemLongClickListener {
+interface OnSettingExitListener {
+    fun onSettingExit()
+}
+
+class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.ItemClickListener, MyRecyclerAdapter.ItemLongClickListener {
 
     private var _binding: FragmentProfileActivityBinding? = null
     private lateinit var dialogView: View
@@ -65,6 +68,12 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
     private var mreviewItems: ArrayList<ReviewItem> = ArrayList()
     private val REQUEST_CODE = 1
     private val ADD_PAGE_REQUEST_CODE = 123
+
+    override fun onSettingExit() {
+        // Setting 액티비티에서 호출되어 프래그먼트로 돌아왔을 때의 처리 로직을 구현합니다.
+        // 예를 들어 필요한 작업을 수행하거나 UI를 업데이트할 수 있습니다.
+        fetchUserInformation(GlobalApplication.loggedInUser)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,6 +104,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
             val intent = Intent(requireActivity(), Addpage_activity::class.java)
             startActivityForResult(intent,ADD_PAGE_REQUEST_CODE)
         }
+
         val settingbutton: Button= root.findViewById(R.id.setting)
         settingbutton.setOnClickListener {
             val intent = Intent(requireActivity(), Setting::class.java)
@@ -188,7 +198,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
     }
 
     private fun fetchUserInformation(email: String?) {
-        val url = "https://witty-shoes-suffer.loca.lt/user/$email" // 사용자 정보를 가져올 API 엔드포인트
+        val url = GlobalApplication.v_url+"/user/$email" // 사용자 정보를 가져올 API 엔드포인트
         val request = Request.Builder().url(url).build()
 
         val client = OkHttpClient()

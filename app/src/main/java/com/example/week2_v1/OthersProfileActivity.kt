@@ -57,7 +57,6 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
     private val REQUEST_CODE = 1
     private val ADD_PAGE_REQUEST_CODE = 123
 
-
     private var userEmail: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,7 +99,6 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
                 followbutton.text = "Follow" // 버튼 텍스트 변경
                 unfollow(userEmail)
             }
-
 
         }
 
@@ -326,7 +324,6 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
             }
         })
     }
-
 
 
     override fun onItemLongClick(view: View, position: Int) {

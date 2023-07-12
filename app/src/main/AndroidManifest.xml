@@ -20,9 +20,6 @@
             android:name=".OthersProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.feed.FriendSearch"
-            android:exported="false" />
-        <activity
             android:name=".ui.profile.Setting"
             android:exported="false" />
         <activity
