@@ -15,18 +15,25 @@
         android:layout_margin="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:textSize="8dp"
+        android:id="@+id/setting"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="170dp"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/setting"
         android:id="@+id/user_profile">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="28dp"
             android:scaleType = "centerCrop"
@@ -35,42 +42,37 @@
             android:layout_marginTop="4dp"
             />
         <LinearLayout
-            android:layout_width="240dp"
+            android:layout_width="match_parent"
             android:layout_height="120dp"
             android:orientation="vertical"
             >
             <LinearLayout
-                android:layout_width="240dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+               >
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16dp"
+                    android:textSize="20dp"
                     android:id="@+id/userid"
                     android:text="userid"
-                    android:layout_marginBottom="4dp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16dp"
-                    android:text="                                     "
-                    android:layout_marginBottom="4dp"/>
-                <Button
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:textSize="8dp"
-                    android:id="@+id/setting"
+
+
                     android:layout_marginBottom="4dp"
-                    android:layout_marginStart="-70dp"/>
+                    android:layout_weight="0.9"
+                    android:layout_gravity="top"/>
+
+
             </LinearLayout>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="30sp"
                 android:id="@+id/username"
                 android:text="username"
-                android:layout_marginBottom="4dp"
+
+                android:layout_marginTop="-10dp"
                 />
             <TextView
                 android:layout_width="wrap_content"
@@ -78,13 +80,27 @@
                 android:textSize="16dp"
                 android:id="@+id/userdescription"
                 android:text="userdescription"
-                android:layout_marginBottom="4dp"/>
-            <TextView
-                android:layout_width="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="2dp"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16dp"
-                android:id="@+id/follower"
-                android:text="팔로워" />
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14dp"
+                    android:id="@+id/follower"
+                    android:text="팔로잉 | 00명 "  />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14dp"
+                    android:id="@+id/following"
+                    android:text="팔로잉 | 00명"
+                    android:layout_marginLeft="4dp"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
     <TextView
