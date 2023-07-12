@@ -8,7 +8,7 @@ class GlobalApplication : Application() {
     companion object{
         var appContext: Context? = null
         var loggedInUser: String? = null
-        var v_url: String? = "https://grumpy-rivers-agree.loca.lt"
+        var v_url: String? = "https://calm-spiders-glow.loca.lt"
     }
     override fun onCreate() {
         super.onCreate()
