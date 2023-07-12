@@ -98,13 +98,7 @@ class Editpage_activity : AppCompatActivity() {
         val log1page = findViewById<EditText>(R.id.log1page)
         val log2 = findViewById<EditText>(R.id.log2)
         val log3 = findViewById<ImageView>(R.id.log3)
-        log3.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            val mimeTypes = arrayOf("image/jpeg", "image/png")
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-            startActivityForResult(intent, 55)
-        }
+
 
 
         val url = GlobalApplication.v_url+"/editreviewsstart?userId=$id"  // 로드
@@ -211,6 +205,7 @@ class Editpage_activity : AppCompatActivity() {
         "comment": "$log2",
         "reader": "$loggedInUser",
         "id":"$id"
+        
     }
 """.trimIndent()
 
