@@ -22,13 +22,18 @@ import com.bumptech.glide.Glide
 import com.example.week2_v1.Addpage_activity
 import com.example.week2_v1.Editpage_activity
 import com.example.week2_v1.FriendSearch
+
 import com.example.week2_v1.GlobalApplication
+
 import com.example.week2_v1.R
 import com.example.week2_v1.SearchAdapter
 import com.example.week2_v1.databinding.ActivitySearchBinding
 import com.example.week2_v1.databinding.FragmentFeedActivityBinding
 import com.example.week2_v1.ui.profile.MyRecyclerAdapter
 import com.example.week2_v1.ui.profile.ReviewItem
+
+import okhttp3.OkHttpClient
+
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -39,6 +44,7 @@ import org.json.JSONException
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.time.ZonedDateTime
+
 import java.time.format.DateTimeFormatter
 
 class FeedFragment : Fragment(),MyRecyclerAdapter.ItemClickListener{
@@ -69,7 +75,9 @@ class FeedFragment : Fragment(),MyRecyclerAdapter.ItemClickListener{
         _binding = FragmentFeedActivityBinding.inflate(inflater, container, false)
 
         val root: View = binding.root
+
         val search = root.findViewById<TextView>(R.id.input_friend)
+
         search.setOnClickListener{
             val intent = Intent(requireActivity(), FriendSearch::class.java)
             startActivity(intent)
@@ -84,6 +92,7 @@ class FeedFragment : Fragment(),MyRecyclerAdapter.ItemClickListener{
 
         mRecyclerView.adapter = mRecyclerAdapter
         mRecyclerAdapter.setReviewList(mreviewItems)
+
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -103,6 +112,7 @@ class FeedFragment : Fragment(),MyRecyclerAdapter.ItemClickListener{
         })
 
         feedReviews()
+
         return root
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -117,7 +127,6 @@ class FeedFragment : Fragment(),MyRecyclerAdapter.ItemClickListener{
         val log1 = dialogView.findViewById<TextView>(R.id.log1)
         val log2 = dialogView.findViewById<TextView>(R.id.log2)
         val log3 = dialogView.findViewById<ImageView>(R.id.log3)
-
 
         title?.text = item.title
         page?.setText(item.startPage.toString()+"쪽부터"+item.endPage.toString()+"쪽까지")
@@ -155,6 +164,7 @@ class FeedFragment : Fragment(),MyRecyclerAdapter.ItemClickListener{
             }
         })
     }
+
     private fun feedReviews() {
         val loggedInUser = GlobalApplication.loggedInUser // 현재 사용자의 이메일
         val url = GlobalApplication.v_url+"/user/reviews/$loggedInUser" // 서버의 API 엔드포인트
@@ -223,6 +233,7 @@ class FeedFragment : Fragment(),MyRecyclerAdapter.ItemClickListener{
             }
         })
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

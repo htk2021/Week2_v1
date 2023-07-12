@@ -3,6 +3,7 @@ package com.example.week2_v1
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.week2_v1.databinding.ActivitySearchBinding
 import com.example.week2_v1.databinding.SearchRecyclerviewBinding
+import com.example.week2_v1.ui.profile.ProfileFragment
 import com.google.gson.GsonBuilder
 import okhttp3.*
 import java.io.IOException
@@ -94,6 +96,17 @@ class FriendsListAdapter(private val friendships: List<Friendship>) : RecyclerVi
         private val nameTextView: TextView = itemView.findViewById(R.id.rv_name)
         private val emailTextView: TextView = itemView.findViewById(R.id.rv_email)
 
+        init {
+            itemView.setOnClickListener {
+                val item = friendships[adapterPosition]
+                val context = itemView.context
+                val intent = Intent(context, ProfileFragment::class.java)
+                intent.putExtra("item", item)
+                context.startActivity(intent)
+                (context as? AppCompatActivity)?.finish()
+            }
+        }
+
         fun bind(friendship: Friendship) {
             nameTextView.text = friendship.name
             emailTextView.text = friendship.email
@@ -116,4 +129,4 @@ data class Friendship(
     val email: String,
     val name: String,
     val profileImageBlob: ByteArray? // Blob 형태의 프로필 이미지를 받을 필드로 수정합니다.
-)
+): Serializable
