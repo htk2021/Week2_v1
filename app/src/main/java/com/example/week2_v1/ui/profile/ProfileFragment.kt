@@ -209,14 +209,21 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
                             val userJson = JSONObject(responseBody)
                             val name = userJson.getString("name")
                             val image = userJson.getString("image")
+                            val follower = userJson.getString("follower_count")
+                            val following = userJson.getString("following_count")
 
                             // 사용자 정보를 UI에 적용
                             val usernameTextView: TextView = _binding?.root?.findViewById(R.id.username) as TextView
-                            val useremailTextView: TextView = _binding?.root?.findViewById(R.id.userdescription) as TextView
+                            val useremailTextView: TextView = _binding?.root?.findViewById(R.id.userid) as TextView
                             val imageView: ImageView = _binding?.root?.findViewById(R.id.imageView) as ImageView
+                            val userfollower: TextView = _binding?.root?.findViewById(R.id.follower) as TextView
+                            val userfollowing: TextView = _binding?.root?.findViewById(R.id.following) as TextView
 
                             usernameTextView.text = name
                             useremailTextView.text = email
+                            userfollower.text = "팔로워 | $follower"
+                            userfollowing.text = "팔로잉 | $following"
+
 
                             if (image.isNotEmpty()) {
                                 // 이미지가 존재하는 경우 Glide를 사용하여 이미지 로드
