@@ -57,7 +57,7 @@ class FeedFragment : Fragment(),MyRecyclerAdapter.ItemClickListener{
         _binding = FragmentFeedActivityBinding.inflate(inflater, container, false)
 
         val root: View = binding.root
-        val search = root.findViewById<EditText>(R.id.input_friend)
+        val search = root.findViewById<TextView>(R.id.input_friend)
         search.setOnClickListener{
             val intent = Intent(requireActivity(), FriendSearch::class.java)
             startActivity(intent)
