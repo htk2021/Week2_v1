@@ -74,15 +74,6 @@
 
                 android:layout_marginTop="-10dp"
                 />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16dp"
-                android:id="@+id/userdescription"
-                android:text="userdescription"
-                android:layout_marginBottom="6dp"
-                android:layout_marginTop="2dp"
-                />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
