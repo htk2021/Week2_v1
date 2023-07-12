@@ -10,6 +10,7 @@ import java.util.Date
 
 data class ReviewItem(
     var title: String?,
+    var author: String?,
     var date: LocalDate?,
     val startPage: Int?,
     val endPage: Int?,
@@ -17,26 +18,34 @@ data class ReviewItem(
     var log1page: Int?,
     var log2: String?,
     var log3: String?,
-
-    var id : Int
+    var id : Int,
+    var reader: String?,
+    var readerName: String?,
+    var readerImage: String?
 
 ) : Parcelable {
     @RequiresApi(Build.VERSION_CODES.O)
     constructor(parcel: Parcel) : this(
         parcel.readString(),
-        parcel.readString()?.let { LocalDate.parse(it) },
-        parcel.readValue(Int::class.java.classLoader) as? Int, // Change this
-        parcel.readValue(Int::class.java.classLoader) as? Int, // Change this
         parcel.readString(),
-        parcel.readValue(Int::class.java.classLoader) as? Int, // Change this
+        parcel.readValue(LocalDate::class.java.classLoader)?.let { it as LocalDate },
+        parcel.readValue(Int::class.java.classLoader)?.let { it as Int },
+        parcel.readValue(Int::class.java.classLoader)?.let { it as Int },
+        parcel.readString(),
+        parcel.readValue(Int::class.java.classLoader)?.let { it as Int },
         parcel.readString(),
         parcel.readString(),
-        parcel.readInt()
+        parcel.readInt(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString()
     )
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
+        parcel.writeString(author)
         parcel.writeString(date?.toString())
         parcel.writeValue(startPage) // Change this
         parcel.writeValue(endPage) // Change this
@@ -44,6 +53,9 @@ data class ReviewItem(
         parcel.writeValue(log1page) // Change this
         parcel.writeString(log2)
         parcel.writeString(log3)
+        parcel.writeString(reader)
+        parcel.writeString(readerImage)
+        parcel.writeString(readerName)
     }
 
     override fun describeContents(): Int {

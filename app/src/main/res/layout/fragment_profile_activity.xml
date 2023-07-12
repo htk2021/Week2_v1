@@ -111,6 +111,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/profile_feed"/>
+        app:layout_constraintTop_toBottomOf="@+id/profile_feed"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

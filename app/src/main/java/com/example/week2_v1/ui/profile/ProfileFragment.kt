@@ -17,17 +17,20 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.week2_v1.Addpage_activity
 import com.example.week2_v1.Editpage_activity
 import com.example.week2_v1.FriendsListActivity
+import com.example.week2_v1.FriendsListActivity2
 import com.example.week2_v1.GlobalApplication
 import com.example.week2_v1.MainActivity
 import com.example.week2_v1.R
@@ -59,9 +62,8 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
 
     private var _binding: FragmentProfileActivityBinding? = null
     private lateinit var dialogView: View
+    private var currentItemPosition: Int = 0
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mRecyclerAdapter: MyRecyclerAdapter
@@ -88,7 +90,7 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
         _binding = FragmentProfileActivityBinding.inflate(inflater, container, false)
         val root: View = binding.root
         mRecyclerView = root.findViewById(R.id.recyclerView)
-        mRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        mRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
         mRecyclerAdapter = MyRecyclerAdapter()
         mRecyclerAdapter.setClickListener(this)
@@ -110,19 +112,20 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
             val intent = Intent(requireActivity(), Setting::class.java)
             startActivityForResult(intent,10)
         }
-
-        //황태경 추가
         val followerTextView: TextView = root.findViewById(R.id.follower)
         followerTextView.setOnClickListener {
+            val intent = Intent(requireActivity(), FriendsListActivity2::class.java)
+            startActivity(intent)
+        }
+        val followingTextView: TextView = root.findViewById(R.id.following)
+        followingTextView.setOnClickListener {
             val intent = Intent(requireActivity(), FriendsListActivity::class.java)
             startActivity(intent)
         }
-
         val loggedInUser = GlobalApplication.loggedInUser // 현재 사용자의 이메일
         fetchUserInformation(loggedInUser)
 
         fetchReviews()
-        //여기까지
 
         return root
     }
@@ -151,10 +154,10 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
                             mreviewItems.clear()
                             for (i in 0 until reviewsArray.length()) {
                                 val reviewJson = reviewsArray.getJSONObject(i)
-
-                                val author = reviewJson.getString("author")
-                                val reader = reviewJson.getString("reader")
                                 val title = reviewJson.getString("title")
+                                val author = reviewJson.getString("author")
+                                val readerName = reviewJson.getString("name")
+                                val readerImage = reviewJson.getString("image")
                                 val readDateStr = reviewJson.getString("read_date")
                                 val readDate = ZonedDateTime.parse(readDateStr).toLocalDate() // read_date를 LocalDate로 변환
                                 val startPage = reviewJson.getInt("start_page")
@@ -169,6 +172,7 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
 
                                 val reviewItem = ReviewItem(
                                     title = title,
+                                    author = author,
                                     date = readDate,
                                     startPage = startPage,
                                     endPage = endPage,
@@ -176,7 +180,10 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
                                     log1page = log1page,
                                     log2 = log2,
                                     log3 = log3,
-                                    id = id
+                                    id = id,
+                                    reader = GlobalApplication.loggedInUser,
+                                    readerName = readerName,
+                                    readerImage = readerImage
                                     // 필요한 다른 데이터 전달
                                 )
 
@@ -258,54 +265,6 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
         })
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-// handle the result here...
-        if (requestCode == ADD_PAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                val reviewItem = data.getParcelableExtra<ReviewItem>("newreview")
-                Log.d("MainActivity", "New review: $reviewItem")
-                reviewItem?.let {
-                    mreviewItems.add(it)
-                    mRecyclerAdapter.setReviewList(mreviewItems)
-                    mRecyclerAdapter.notifyDataSetChanged()
-                    saveReviewItems()
-                }
-            }
-        }
-        if (requestCode == 33 && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                val editedReviewItem = data.getParcelableExtra<ReviewItem>("editedreview")
-                val position = data?.getIntExtra("position",-1)
-                if (editedReviewItem != null && position != -1 && position != null ) {
-
-                    // 수정된 리뷰를 업데이트
-                    mreviewItems[position] = editedReviewItem
-                    mRecyclerAdapter.notifyItemChanged(position)
-                    Log.d("why..item","$editedReviewItem")
-                    val title = dialogView.findViewById<TextView>(R.id.title)
-                    val author = dialogView.findViewById<TextView>(R.id.author)
-                    val dateString = dialogView.findViewById<TextView>(R.id.time)
-                    val page = dialogView.findViewById<TextView>(R.id.page)
-                    val log1 = dialogView.findViewById<TextView>(R.id.log1)
-                    val log2 = dialogView.findViewById<TextView>(R.id.log2)
-                    val log3 = dialogView.findViewById<ImageView>(R.id.log3)
-                    val button = dialogView.findViewById<Button>(R.id.addbutton)
-                    title.text = editedReviewItem.title
-                    page.setText(editedReviewItem.startPage.toString()+"쪽에서"+editedReviewItem.endPage.toString()+"쪽까지")
-                    log1.setText("\""+editedReviewItem.log1.toString()+"\", "+editedReviewItem.log1page.toString()+"p")
-                    log2.setText(editedReviewItem.log2.toString())
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    dateString.text = "${editedReviewItem.date?.format(dateFormatter)}"
-                    saveReviewItems()
-
-
-                }
-            }
-        }
-    }
     override fun onItemLongClick(view: View, position: Int) {
         val builder = AlertDialog.Builder(view.context)
         builder.setTitle("리뷰 삭제")
@@ -325,11 +284,18 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
     }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onItemClick(view: View, position: Int) {
+        currentItemPosition = position
+        showItemDialog(position)
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun showItemDialog(position: Int) {
         val item: ReviewItem = mreviewItems[position]
         val inflater: LayoutInflater = layoutInflater
         dialogView= inflater.inflate(R.layout.activity_detail_review, null)
         val title = dialogView.findViewById<TextView>(R.id.title)
         val author = dialogView.findViewById<TextView>(R.id.author)
+        val readerimage = dialogView.findViewById<ImageView>(R.id.readerimage)
+        val readername = dialogView.findViewById<TextView>(R.id.readername)
         val dateString = dialogView.findViewById<TextView>(R.id.time)
         val page = dialogView.findViewById<TextView>(R.id.page)
         val log1 = dialogView.findViewById<TextView>(R.id.log1)
@@ -338,15 +304,17 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
         val button = dialogView.findViewById<Button>(R.id.button)
 
         title?.text = item.title
+        author?.text = item.author
+        readername.text = item.readerName
+        Glide.with(readerimage.context).load(item.readerImage).into(readerimage)
         page?.setText(item.startPage.toString()+"쪽부터"+item.endPage.toString()+"쪽까지")
-        log1?.setText("\""+item.log1.toString()+"\", "+item.log1page.toString()+"p")
+        log1?.setText("\""+item.log1.toString()+"\", "+item.title+" "+item.log1page.toString()+"p")
         log2?.setText(item.log2.toString())
         Glide.with(log3.context)
             .load(item.log3)
             .into(log3)
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
         dateString.text = "${item.date?.format(dateFormatter)}"
-
 
         val dialog = Dialog(requireContext(), android.R.style.Theme_Light_NoTitleBar_Fullscreen)
         button.setOnClickListener {
@@ -359,16 +327,17 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
         dialog.show()
 
         dialogView.setOnTouchListener(object : View.OnTouchListener {
-            private var downY = 0f
+            private var downX = 0f
             private val CLOSE_THRESHOLD = 50
+
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
-                        downY = event.y
+                        downX = event.x
                         return true
                     }
                     MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP -> {
-                        if (downY - event.y > CLOSE_THRESHOLD) {
+                        if (event.x - downX > CLOSE_THRESHOLD) {
                             dialog.dismiss()
                             return true
                         }
@@ -377,6 +346,36 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
                 return false
             }
         })
+
+        val scrollView = dialogView.findViewById<ScrollView>(R.id.scrollView)
+        scrollView.viewTreeObserver.addOnScrollChangedListener {
+            val scrollY = scrollView.scrollY
+            val threshold = 500 // 스크롤을 어느 정도 이동해야 아이템을 변경할지 설정합니다.
+            val maxScroll = scrollView.getChildAt(0).height - scrollView.height
+
+            if (scrollY >= maxScroll - threshold) {
+                // 스크롤이 맨 아래에 도달하면 다음 아이템을 보여줍니다.
+                showNextItem()
+            } else if (scrollY == 0 && position > 0) {
+                // 스크롤이 맨 위에 도달하면 이전 아이템을 보여줍니다.
+                showPreviousItem()
+            }
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showNextItem() {
+        if (currentItemPosition < mreviewItems.size - 1) {
+            currentItemPosition++
+            showItemDialog(currentItemPosition)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showPreviousItem() {
+        if (currentItemPosition > 0) {
+            currentItemPosition--
+            showItemDialog(currentItemPosition)
+        }
     }
 
     override fun onDestroyView() {

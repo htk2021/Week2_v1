@@ -4,27 +4,73 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/scrollView"
     android:fillViewport="true">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/reader"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/readerimage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/reader"
+                android:scaleType="centerCrop"
+                android:src="@drawable/netflix"
+                app:shapeAppearanceOverlay="@style/RoundedImageView"/>
+            <TextView
+                android:id="@+id/readername"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="10dp"
+                android:textSize="22sp"
+                android:text="서경이"
+                app:layout_constraintHorizontal_bias="1.0" />
+        </LinearLayout>
 
-        <ImageView
-            android:id="@+id/log3"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="400dp"
-            android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/netflix" />
+            app:layout_constraintTop_toBottomOf="@id/reader"
+            android:id="@+id/IMAGE">
+
+            <ImageView
+                android:id="@+id/log3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/mad_figure_1"
+                android:alpha="0.7"/>
+            <TextView
+                android:id="@+id/log1"
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:text="'인상깊은 구절은 인상깊은 구절이다. 이것은 무엇인가. 참으로 인상깊지?', 제목 2p"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:ems="10"
+                android:fontFamily="@font/KOTRA_HOPE"
+                android:layout_centerHorizontal="true"
+                />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/log3"
+            app:layout_constraintTop_toBottomOf="@+id/IMAGE"
             app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/title1"
             android:orientation="horizontal">
@@ -44,15 +90,6 @@
                 android:layout_marginLeft="16dp"
                 android:textSize="18sp"
                 android:text="작가"
-                app:layout_constraintHorizontal_bias="1.0" />
-            <TextView
-                android:id="@+id/author1"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="16dp"
-                android:textSize="18sp"
-                android:text="지음"
                 app:layout_constraintHorizontal_bias="1.0" />
 
         </LinearLayout>
@@ -79,44 +116,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/page" />
-
-        <TextView
-            android:id="@+id/messagetext1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="인상깊은 구절"
-            android:ems="10"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/time" />
-
-        <TextView
-            android:id="@+id/log1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="인상깊은 구절, 2p"
-            android:ems="10"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/messagetext1" />
-
-
-
-        <TextView
-            android:id="@+id/log21"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="오늘의 글 기록"
-            app:layout_constraintTop_toBottomOf="@+id/log1"
-            android:ems="10" />
         <TextView
             android:id="@+id/log2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="오늘의 글 기록"
-            app:layout_constraintTop_toBottomOf="@+id/log21"
+            app:layout_constraintTop_toBottomOf="@+id/time"
+            android:layout_marginTop="10dp"
             android:ems="10" />
         <Button
             android:id="@+id/button"

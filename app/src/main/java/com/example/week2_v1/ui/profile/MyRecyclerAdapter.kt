@@ -86,12 +86,10 @@ class MyRecyclerAdapter : RecyclerView.Adapter<MyRecyclerAdapter.ViewHolder>() {
                 title.text = it.title
                 val formatter = DateTimeFormatter.ofPattern("MM.dd.yyyy")
                 dateString.setText(it.date?.format(formatter) ?: "")
-                page.setText(it.startPage.toString()+"페이지 ~ "+it.endPage.toString()+"페이지")
-                log1.setText("\""+it.log1?.toString()+"\", "+ it.log1page.toString() + "p"?: it.log2.toString())
+                log1.setText("\""+it.log1?.toString()+"\", "+ it.title.toString() + " " + it.log1page.toString() + "p")
                 Glide.with(log3.context)
                     .load(it.log3)
                     .into(log3)
-
             }
         }
 
