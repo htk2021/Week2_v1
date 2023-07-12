@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.week2_v1.ui.profile.ProfileFragment"
-    android:padding="20dp">
+    android:padding="20dp"
+    android:id="@+id/container">
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button1"
         android:layout_width="wrap_content"
@@ -55,9 +57,12 @@
                     android:textSize="20dp"
                     android:id="@+id/userid"
                     android:text="userid"
+
+
                     android:layout_marginBottom="4dp"
                     android:layout_weight="0.9"
                     android:layout_gravity="top"/>
+
 
             </LinearLayout>
             <TextView

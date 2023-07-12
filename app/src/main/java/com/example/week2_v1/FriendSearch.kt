@@ -8,18 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.example.week2_v1.databinding.ActivityFriendSearchBinding
-import com.example.week2_v1.databinding.SearchRecyclerviewBinding
 import com.google.gson.GsonBuilder
 import okhttp3.*
 import java.io.IOException
@@ -127,5 +122,16 @@ class UserSearchAdapter(private val users: List<User>) : RecyclerView.Adapter<Us
         val name: TextView = view.findViewById(R.id.rv_name)
         val email: TextView = view.findViewById(R.id.rv_email)
         val imageView: ImageView = view.findViewById(R.id.rv_image)
+
+        init {
+            view.setOnClickListener {
+                val user = users[adapterPosition]
+                val email = user.email
+
+                val intent = Intent(view.context, OthersProfileActivity::class.java)
+                intent.putExtra("email", email)
+                view.context.startActivity(intent)
+            }
+        }
     }
 }

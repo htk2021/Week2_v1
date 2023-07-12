@@ -1,4 +1,4 @@
-package com.example.week2_v1.ui.profile
+package com.example.week2_v1
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -20,19 +20,14 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.week2_v1.Addpage_activity
-import com.example.week2_v1.Editpage_activity
-import com.example.week2_v1.FriendsListActivity
-import com.example.week2_v1.GlobalApplication
-import com.example.week2_v1.MainActivity
-import com.example.week2_v1.R
-import com.example.week2_v1.SecondActivity
-import com.example.week2_v1.databinding.FragmentProfileActivityBinding
+import com.example.week2_v1.ui.profile.MyRecyclerAdapter
+import com.example.week2_v1.ui.profile.ReviewItem
+import com.example.week2_v1.ui.profile.Setting
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import okhttp3.Call
 import okhttp3.Callback
@@ -51,34 +46,26 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyclerAdapter.ItemLongClickListener {
+class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickListener, MyRecyclerAdapter.ItemLongClickListener {
 
-    private var _binding: FragmentProfileActivityBinding? = null
-    private lateinit var dialogView: View
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mRecyclerAdapter: MyRecyclerAdapter
     private var mreviewItems: ArrayList<ReviewItem> = ArrayList()
     private val REQUEST_CODE = 1
     private val ADD_PAGE_REQUEST_CODE = 123
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    private var userEmail: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.fragment_profile_activity)
+
+        userEmail = intent.getStringExtra("email")
 
         mreviewItems = loadReviewItems()
-        val dashboardViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
 
-        _binding = FragmentProfileActivityBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        mRecyclerView = root.findViewById(R.id.recyclerView)
-        mRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        mRecyclerView = findViewById(R.id.recyclerView)
+        mRecyclerView.layoutManager = LinearLayoutManager(this)
 
         mRecyclerAdapter = MyRecyclerAdapter()
         mRecyclerAdapter.setClickListener(this)
@@ -87,44 +74,39 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         mRecyclerView.adapter = mRecyclerAdapter
         mRecyclerAdapter.setReviewList(mreviewItems)
 
-        val iconplus: FloatingActionButton= root.findViewById(R.id.button1)
+        val iconplus: FloatingActionButton = findViewById(R.id.button1)
         iconplus.setOnClickListener {
-            Log.d("MyApp", "Button clicked") // Add this line
-
-            val intent = Intent(requireActivity(), Addpage_activity::class.java)
-            startActivityForResult(intent,ADD_PAGE_REQUEST_CODE)
+            Log.d("MyApp", "Button clicked")
+            val intent = Intent(this, Addpage_activity::class.java)
+            startActivityForResult(intent, ADD_PAGE_REQUEST_CODE)
         }
-        val settingbutton: Button= root.findViewById(R.id.setting)
+
+        val settingbutton: Button = findViewById(R.id.setting)
         settingbutton.setOnClickListener {
-            val intent = Intent(requireActivity(), Setting::class.java)
-            startActivityForResult(intent,10)
+            val intent = Intent(this, Setting::class.java)
+            startActivityForResult(intent, 10)
         }
 
-        //황태경 추가
-        val followerTextView: TextView = root.findViewById(R.id.follower)
+        val followerTextView: TextView = findViewById(R.id.follower)
         followerTextView.setOnClickListener {
-            val intent = Intent(requireActivity(), FriendsListActivity::class.java)
+            val intent = Intent(this, FriendsListActivity::class.java)
             startActivity(intent)
         }
 
         val loggedInUser = GlobalApplication.loggedInUser // 현재 사용자의 이메일
         fetchUserInformation(loggedInUser)
-
         fetchReviews()
-        //여기까지
-
-        return root
     }
 
     private fun fetchReviews() {
         val loggedInUser = GlobalApplication.loggedInUser // 현재 사용자의 이메일
-        val url = GlobalApplication.v_url+"/user/reviews/$loggedInUser" // 서버의 API 엔드포인트
+        val url = GlobalApplication.v_url+"/user/reviews/$userEmail" // 서버의 API 엔드포인트
         val request = Request.Builder().url(url).build()
 
         val client = OkHttpClient()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                activity?.runOnUiThread {
+                runOnUiThread {
                     // API 요청 실패 처리
                     // 에러 처리 로직 구현
                 }
@@ -134,7 +116,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
                 if (response.isSuccessful && responseBody != null) {
-                    activity?.runOnUiThread {
+                    runOnUiThread {
                         try {
                             val reviewsArray = JSONArray(responseBody)
                             mreviewItems.clear()
@@ -177,7 +159,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
                         }
                     }
                 } else {
-                    activity?.runOnUiThread {
+                    runOnUiThread {
                         // API 응답 실패 처리
                         // 에러 처리 로직 구현
                     }
@@ -187,14 +169,14 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
     }
 
     private fun fetchUserInformation(email: String?) {
-        val url = GlobalApplication.v_url+"/user/$email" // 사용자 정보를 가져올 API 엔드포인트
+        val url = GlobalApplication.v_url+"/user/$userEmail" // 사용자 정보를 가져올 API 엔드포인트
         val request = Request.Builder().url(url).build()
 
         val client = OkHttpClient()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 // API 요청 실패 처리
-                activity?.runOnUiThread {
+                runOnUiThread {
                     // 에러 처리 로직 구현
                 }
             }
@@ -203,30 +185,23 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
                 val responseBody = response.body?.string()
                 if (response.isSuccessful && responseBody != null) {
                     // API 응답 성공 및 사용자 정보 처리
-                    activity?.runOnUiThread {
+                    runOnUiThread {
                         try {
                             val userJson = JSONObject(responseBody)
                             val name = userJson.getString("name")
                             val image = userJson.getString("image")
-                            val follower = userJson.getString("follower_count")
-                            val following = userJson.getString("following_count")
 
                             // 사용자 정보를 UI에 적용
-                            val usernameTextView: TextView = _binding?.root?.findViewById(R.id.username) as TextView
-                            val useremailTextView: TextView = _binding?.root?.findViewById(R.id.userid) as TextView
-                            val imageView: ImageView = _binding?.root?.findViewById(R.id.imageView) as ImageView
-                            val userfollower: TextView = _binding?.root?.findViewById(R.id.follower) as TextView
-                            val userfollowing: TextView = _binding?.root?.findViewById(R.id.following) as TextView
+                            val usernameTextView: TextView = findViewById(R.id.username)
+                            val useremailTextView: TextView = findViewById(R.id.userid)
+                            val imageView: ImageView = findViewById(R.id.imageView)
 
                             usernameTextView.text = name
                             useremailTextView.text = email
-                            userfollower.text = "팔로워 | $follower"
-                            userfollowing.text = "팔로잉 | $following"
-
 
                             if (image.isNotEmpty()) {
                                 // 이미지가 존재하는 경우 Glide를 사용하여 이미지 로드
-                                Glide.with(this@ProfileFragment)
+                                Glide.with(this@OthersProfileActivity)
                                     .load(image)
                                     .into(imageView)
                             } else {
@@ -239,7 +214,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
                     }
                 } else {
                     // API 응답 실패 처리
-                    activity?.runOnUiThread {
+                    runOnUiThread {
                         // 에러 처리 로직 구현
                     }
                 }
@@ -247,54 +222,6 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         })
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-// handle the result here...
-        if (requestCode == ADD_PAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                val reviewItem = data.getParcelableExtra<ReviewItem>("newreview")
-                Log.d("MainActivity", "New review: $reviewItem")
-                reviewItem?.let {
-                    mreviewItems.add(it)
-                    mRecyclerAdapter.setReviewList(mreviewItems)
-                    mRecyclerAdapter.notifyDataSetChanged()
-                    saveReviewItems()
-                }
-            }
-        }
-        if (requestCode == 33 && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                val editedReviewItem = data.getParcelableExtra<ReviewItem>("editedreview")
-                val position = data?.getIntExtra("position",-1)
-                if (editedReviewItem != null && position != -1 && position != null ) {
-
-                    // 수정된 리뷰를 업데이트
-                    mreviewItems[position] = editedReviewItem
-                    mRecyclerAdapter.notifyItemChanged(position)
-                    Log.d("why..item","$editedReviewItem")
-                    val title = dialogView.findViewById<TextView>(R.id.title)
-                    val author = dialogView.findViewById<TextView>(R.id.author)
-                    val dateString = dialogView.findViewById<TextView>(R.id.time)
-                    val page = dialogView.findViewById<TextView>(R.id.page)
-                    val log1 = dialogView.findViewById<TextView>(R.id.log1)
-                    val log2 = dialogView.findViewById<TextView>(R.id.log2)
-                    val log3 = dialogView.findViewById<ImageView>(R.id.log3)
-                    val button = dialogView.findViewById<Button>(R.id.addbutton)
-                    title.text = editedReviewItem.title
-                    page.setText(editedReviewItem.startPage.toString()+"쪽에서"+editedReviewItem.endPage.toString()+"쪽까지")
-                    log1.setText("\""+editedReviewItem.log1.toString()+"\", "+editedReviewItem.log1page.toString()+"p")
-                    log2.setText(editedReviewItem.log2.toString())
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    dateString.text = "${editedReviewItem.date?.format(dateFormatter)}"
-                    saveReviewItems()
-
-
-                }
-            }
-        }
-    }
     override fun onItemLongClick(view: View, position: Int) {
         val builder = AlertDialog.Builder(view.context)
         builder.setTitle("리뷰 삭제")
@@ -312,11 +239,12 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         val dialog: AlertDialog = builder.create()
         dialog.show()
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onItemClick(view: View, position: Int) {
         val item: ReviewItem = mreviewItems[position]
         val inflater: LayoutInflater = layoutInflater
-        dialogView= inflater.inflate(R.layout.activity_detail_review, null)
+        val dialogView: View = inflater.inflate(R.layout.activity_detail_review, null)
         val title = dialogView.findViewById<TextView>(R.id.title)
         val author = dialogView.findViewById<TextView>(R.id.author)
         val dateString = dialogView.findViewById<TextView>(R.id.time)
@@ -327,19 +255,18 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         val button = dialogView.findViewById<Button>(R.id.button)
 
         title?.text = item.title
-        page?.setText(item.startPage.toString()+"쪽부터"+item.endPage.toString()+"쪽까지")
-        log1?.setText("\""+item.log1.toString()+"\", "+item.log1page.toString()+"p")
-        log2?.setText(item.log2.toString())
+        page?.setText("${item.startPage}쪽부터 ${item.endPage}쪽까지")
+        log1?.setText("\"${item.log1}\", ${item.log1page}p")
+        log2?.setText(item.log2)
         Glide.with(log3.context)
             .load(item.log3)
             .into(log3)
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
-        dateString.text = "${item.date?.format(dateFormatter)}"
+        dateString.text = item.date?.format(dateFormatter)
 
-
-        val dialog = Dialog(requireContext(), android.R.style.Theme_Light_NoTitleBar_Fullscreen)
+        val dialog = Dialog(this, android.R.style.Theme_Light_NoTitleBar_Fullscreen)
         button.setOnClickListener {
-            val intent = Intent(requireActivity(), Editpage_activity::class.java)
+            val intent = Intent(this, Editpage_activity::class.java)
             intent.putExtra("editedreview", item as Parcelable)
             intent.putExtra("position", position)
             startActivityForResult(intent, 33)
@@ -368,13 +295,9 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
         })
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
     private fun saveReviewItems() {
         try {
-            val fos = requireActivity().openFileOutput("reviews.dat", Context.MODE_PRIVATE)
+            val fos = openFileOutput("reviews.dat", Context.MODE_PRIVATE)
             val os = ObjectOutputStream(fos)
             os.writeObject(mreviewItems)
             os.close()
@@ -383,9 +306,10 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
             e.printStackTrace()
         }
     }
+
     private fun loadReviewItems(): ArrayList<ReviewItem> {
         try {
-            val fis = requireActivity().openFileInput("reviews.dat")
+            val fis = openFileInput("reviews.dat")
             val isObject = ObjectInputStream(fis)
             val reviews: ArrayList<ReviewItem> = isObject.readObject() as ArrayList<ReviewItem>
             isObject.close()
