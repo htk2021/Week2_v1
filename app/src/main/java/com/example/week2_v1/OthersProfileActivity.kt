@@ -31,8 +31,11 @@ import com.example.week2_v1.ui.profile.Setting
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONException
@@ -58,7 +61,7 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_profile_activity)
+        setContentView(R.layout.activity_others_profile)
 
         userEmail = intent.getStringExtra("email")
 
@@ -81,10 +84,22 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
             startActivityForResult(intent, ADD_PAGE_REQUEST_CODE)
         }
 
-        val settingbutton: Button = findViewById(R.id.setting)
-        settingbutton.setOnClickListener {
-            val intent = Intent(this, Setting::class.java)
-            startActivityForResult(intent, 10)
+        var isButtonClicked = false
+        val followbutton: Button= findViewById(R.id.follow)
+        followbutton.setOnClickListener{
+            isButtonClicked = !isButtonClicked
+            if (isButtonClicked) {
+                // 버튼이 클릭된 상태일 때 수행되는 코드
+                // 서버에 "on" 상태를 보낼 함수를 호출
+                followbutton.text = "Following" // 버튼 텍스트 변경
+                follow(userEmail)
+            } else {
+                // 버튼이 클릭되지 않은 상태일 때 수행되는 코드
+                // 서버에 "on" 상태를 보낼 함수를 호출
+                followbutton.text = "Follow" // 버튼 텍스트 변경
+                unfollow(userEmail)
+            }
+
         }
 
         val followerTextView: TextView = findViewById(R.id.follower)
@@ -221,6 +236,95 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
             }
         })
     }
+    private fun follow(email: String?) {
+        val loggedInUser = GlobalApplication.loggedInUser
+        val url = GlobalApplication.v_url+"/follow"
+
+        val json = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val jsonObject = JSONObject()
+        jsonObject.put("loggedInUser", loggedInUser)
+        jsonObject.put("email", email)
+        val requestBody = RequestBody.create(json, jsonObject.toString())
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // API 요청 실패 처리
+                runOnUiThread {
+                    // 에러 처리 로직 구현
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                if (response.isSuccessful && responseBody != null) {
+                    // API 응답 성공 및 사용자 정보 처리
+                    runOnUiThread {
+                        try {
+
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                    }
+                } else {
+                    // API 응답 실패 처리
+                    runOnUiThread {
+                        // 에러 처리 로직 구현
+                    }
+                }
+            }
+        })
+    }
+    private fun unfollow(email: String?) {
+        val loggedInUser = GlobalApplication.loggedInUser
+        val url = GlobalApplication.v_url+"/unfollow"
+
+        val json = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val jsonObject = JSONObject()
+        jsonObject.put("loggedInUser", loggedInUser)
+        jsonObject.put("email", email)
+        val requestBody = RequestBody.create(json, jsonObject.toString())
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // API 요청 실패 처리
+                runOnUiThread {
+                    // 에러 처리 로직 구현
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                if (response.isSuccessful && responseBody != null) {
+                    // API 응답 성공 및 사용자 정보 처리
+                    runOnUiThread {
+                        try {
+
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                    }
+                } else {
+                    // API 응답 실패 처리
+                    runOnUiThread {
+                        // 에러 처리 로직 구현
+                    }
+                }
+            }
+        })
+    }
+
 
     override fun onItemLongClick(view: View, position: Int) {
         val builder = AlertDialog.Builder(view.context)

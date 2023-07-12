@@ -4,10 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.week2_v1.ui.profile.ProfileFragment"
-    android:padding="20dp"
-    android:id="@+id/container">
-
+    tools:context="com.example.week2_v1.OthersProfileActivity"
+    android:padding="20dp">
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button1"
         android:layout_width="wrap_content"
@@ -29,22 +27,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/setting"
         android:id="@+id/user_profile">
-
-
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:scaleType = "centerCrop"
-            app:shapeAppearanceOverlay="@style/RoundedImageView"
-            android:src ="@drawable/gray_circle"
+        <LinearLayout
             android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_height="match_parent"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="28dp"
 
-            />
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType = "centerCrop"
+                app:shapeAppearanceOverlay="@style/RoundedImageView"
+                android:src ="@drawable/gray_circle"
 
+                />
+            <Button
+                android:id="@+id/follow"
+                android:layout_width="90dp"
+                android:layout_height="34dp"
+                android:scaleType = "centerCrop"
+                />
 
+        </LinearLayout>
 
 
         <LinearLayout
@@ -56,19 +62,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-               >
+                >
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20dp"
                     android:id="@+id/userid"
                     android:text="userid"
-
-
                     android:layout_marginBottom="4dp"
                     android:layout_weight="0.9"
                     android:layout_gravity="top"/>
-
 
             </LinearLayout>
             <TextView
@@ -80,6 +83,7 @@
 
                 android:layout_marginTop="-10dp"
                 />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
