@@ -59,6 +59,7 @@
         <activity android:name=".SearchActivity" />
         <activity android:name=".DetailPageActivity" />
         <activity android:name=".FriendsListActivity" />
+        <activity android:name=".FriendSearch" />
 
 
     </application>

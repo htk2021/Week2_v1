@@ -110,7 +110,7 @@ class Addpage_activity : AppCompatActivity() {
             startActivityForResult(intent, 55)
         }
 
-        val addReviewUrl = "https://famous-parrots-feel.loca.lt/reviews"
+        val addReviewUrl = GlobalApplication.v_url+"/reviews"
         // Get Button instance and set listener
         val addbutton = findViewById<Button>(R.id.addbutton)
         addbutton.setOnClickListener {

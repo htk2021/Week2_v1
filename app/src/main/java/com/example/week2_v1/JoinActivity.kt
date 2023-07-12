@@ -48,7 +48,7 @@ class JoinActivity : AppCompatActivity() {
     }
 
     private fun saveUserToMySQL(name: String, email: String, password: String) {
-        val url = "https://famous-parrots-feel.loca.lt/saveUser" // MySQL 서버 URL
+        val url = GlobalApplication.v_url+"/saveUser" // MySQL 서버 URL
 
         val json = """
         {

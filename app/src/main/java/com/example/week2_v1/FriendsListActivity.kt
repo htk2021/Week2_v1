@@ -45,7 +45,7 @@ class FriendsListActivity : AppCompatActivity() {
         val userEmail = GlobalApplication.loggedInUser ?: ""
         Log.d("계정주인", "$userEmail")
         val encodedUserEmail = URLEncoder.encode(userEmail, "UTF-8")
-        val url = "https://famous-parrots-feel.loca.lt/friendsofuser?userEmail=$encodedUserEmail"
+        val url = GlobalApplication.v_url+"/friendsofuser?userEmail=$encodedUserEmail"
 
         val request = Request.Builder()
             .url(url)

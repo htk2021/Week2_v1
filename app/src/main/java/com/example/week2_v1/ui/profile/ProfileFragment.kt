@@ -119,7 +119,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
 
     private fun fetchReviews() {
         val loggedInUser = GlobalApplication.loggedInUser // 현재 사용자의 이메일
-        val url = "https://famous-parrots-feel.loca.lt/user/reviews/$loggedInUser" // 서버의 API 엔드포인트
+        val url = GlobalApplication.v_url+"/user/reviews/$loggedInUser" // 서버의 API 엔드포인트
         val request = Request.Builder().url(url).build()
 
         val client = OkHttpClient()
@@ -153,6 +153,7 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
                                 val log1page = reviewJson.getInt("memorable_page")
                                 val log2 = reviewJson.getString("comment")
                                 val log3 = reviewJson.getString("photo")
+                                val id = reviewJson.getInt("id")
                                 // 필요한 다른 데이터도 가져와서 ReviewItem에 추가
                                 //후기에 띄워놓지 않더라도 일단 받아왔음
 
@@ -164,7 +165,8 @@ class ProfileFragment : Fragment(), MyRecyclerAdapter.ItemClickListener, MyRecyc
                                     log1 = log1,
                                     log1page = log1page,
                                     log2 = log2,
-                                    log3 = log3
+                                    log3 = log3,
+                                    id = id
                                     // 필요한 다른 데이터 전달
                                 )
 
