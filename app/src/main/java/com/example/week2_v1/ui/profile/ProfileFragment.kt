@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -218,7 +219,7 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
                         try {
                             val userJson = JSONObject(responseBody)
                             val name = userJson.getString("name")
-                            val image = userJson.getString("image")
+                            val imageBlob = userJson.getString("image")
                             val follower = userJson.getString("follower_count")
                             val following = userJson.getString("following_count")
 
@@ -235,14 +236,23 @@ class ProfileFragment : Fragment(), OnSettingExitListener, MyRecyclerAdapter.Ite
                             userfollowing.text = "팔로잉 | $following"
 
 
-                            if (image.isNotEmpty()) {
+                            if (imageBlob.isNotEmpty()) {
+
+                                Log.d("존재여부","$imageBlob")
+                                // Blob 형태의 이미지를 ByteArray로 변환
+                                val imageByteArray = android.util.Base64.decode(imageBlob, android.util.Base64.DEFAULT)
+
+                                // ByteArray를 Bitmap으로 디코딩
+                                val bitmap = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
+
                                 // 이미지가 존재하는 경우 Glide를 사용하여 이미지 로드
                                 Glide.with(this@ProfileFragment)
-                                    .load(image)
+                                    .load(bitmap)
                                     .into(imageView)
                             } else {
                                 // 이미지가 없는 경우 빈 화면을 표시 (설정해야 할 기본 이미지 등)
                                 imageView.setImageDrawable(null)
+                                Log.d("존재여부","없어")
                             }
                         } catch (e: JSONException) {
                             e.printStackTrace()

@@ -94,13 +94,23 @@ class Setting : AppCompatActivity() {
 
     private fun updateUserInfo(name: String, email: String, password: String) {
         val url = GlobalApplication.v_url+"/updateuserinfo"
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("name", name)
-            .addFormDataPart("email", email)
-            .addFormDataPart("password", password)
-            .addFormDataPart("image", "profile_image.jpg", getImageRequestBody())
-            .build()
+
+        val name = findViewById<EditText>(R.id.EditName).text.toString()
+        val email = GlobalApplication.loggedInUser ?: ""
+        val password = findViewById<EditText>(R.id.EditPassword).text.toString()
+        val image = selectedImageUri?.toString()// 작성자 정보를 가져옴
+
+        // 리뷰 데이터를 JSON 형식으로 생성
+        val reviewData = """
+        {
+            "name": "$name",
+            "email": "$email",
+            "password": "$password",
+            "image": "$image"
+        }
+    """.trimIndent()
+
+        val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), reviewData)
 
         val request = Request.Builder()
             .url(url)

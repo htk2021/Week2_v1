@@ -57,7 +57,7 @@ class SearchActivity : AppCompatActivity() {
                 .url(url)
                 .addHeader("X-Naver-Client-Id", clientId)
                 .addHeader("X-Naver-Client-Secret", clientSecret)
-                .method("POST", null)
+                .method("GET", null)
                 .build()
 
             client.newCall(request).enqueue(object : Callback {

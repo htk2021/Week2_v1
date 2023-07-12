@@ -1,5 +1,6 @@
 package com.example.week2_v1.ui.search
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +8,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.week2_v1.Homefeed
+import com.example.week2_v1.SearchActivity
 import com.example.week2_v1.databinding.FragmentSearchActivityBinding
+import com.google.gson.GsonBuilder
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
+import java.net.URLEncoder
 
 class SearchFragment : Fragment() {
 
@@ -27,13 +37,12 @@ class SearchFragment : Fragment() {
 
         _binding = FragmentSearchActivityBinding.inflate(inflater, container, false)
         val root: View = binding.root
-/*
-        val textView: TextView = binding.textSearch
-        SearchViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+
+        binding.searchEditText.setOnClickListener {
+            val intent = Intent(this.context, SearchActivity::class.java)
+            startActivity(intent)
         }
 
- */
         return root
     }
 
