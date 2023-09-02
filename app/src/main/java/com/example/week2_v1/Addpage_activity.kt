@@ -1,8 +1,8 @@
 package com.example.week2_v1
 import android.app.Activity
-import android.app.DatePickerDialog
-import android.app.DatePickerDialog.OnDateSetListener
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -10,11 +10,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.RatingBar.OnRatingBarChangeListener
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -25,36 +22,41 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import org.json.JSONObject
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import kotlin.math.roundToInt
 
 class Addpage_activity : AppCompatActivity() {
     private val calendar = Calendar.getInstance()
     private lateinit var datetext: TextView
     private var date: LocalDate? = null
-    private val ADD_PAGE_REQUEST_CODE = 123
     private var selectedImageUri: Uri? = null
 
 
     //황태경이 추가한 코드. item 넘겨받는 용도
     private lateinit var searchButton: TextView
+
     private lateinit var titleTextView: TextView
     private lateinit var authorTextView: TextView
-    private lateinit var descriptionTextView: TextView
-    private lateinit var imageView: ImageView
+    private lateinit var posterImageView: ImageView
+    private lateinit var dateStringTextView: TextView
+    private lateinit var page1EditText: EditText
+    private lateinit var page2EditText: EditText
+    private lateinit var log1EditText: EditText
+    private lateinit var log1pageEditText: EditText
+    private lateinit var log2EditText: EditText
+
+    private lateinit var OcrButton: Button
+
+    private var returnedItem: Item? = null
+    private lateinit var sharedPreferences: SharedPreferences
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -62,84 +64,63 @@ class Addpage_activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_addpage)
 
+        sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+
         //황태경 추가
         searchButton = findViewById(R.id.editTitle)
         searchButton.setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java)
 
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            startActivity(intent)
-            Log.d("AddpageActivity", "Going to SearchActivity")
-
-            finish()
+            startActivityForResult(intent, 14)
         }
+
         titleTextView = findViewById(R.id.title)
         authorTextView = findViewById(R.id.author)
-        descriptionTextView = findViewById(R.id.bookdetail)
-        imageView = findViewById(R.id.poster)
-        val item = intent.getSerializableExtra("item") as? Item
-        item?.let {
-            titleTextView.text = item.title
-            authorTextView.text = item.author
-            descriptionTextView.text = item.description
-            Glide.with(this)
-                .load(item.image)
-                .into(imageView)
+        posterImageView = findViewById(R.id.poster) //log3
+        dateStringTextView = findViewById(R.id.time)
+        page1EditText = findViewById(R.id.page1)
+        page2EditText = findViewById(R.id.page2)
+        log1EditText = findViewById(R.id.log1)
+        log1pageEditText = findViewById(R.id.log1page)
+        log2EditText = findViewById(R.id.log2)
+        OcrButton = findViewById(R.id.startOcrButton)
+
+        OcrButton.setOnClickListener {
+            val intent = Intent(this, OcrActivity::class.java)
+            startActivityForResult(intent, 18)
         }
-
-
-        // Get EditText instances
-        val title = findViewById<TextView>(R.id.title)
-        val author = findViewById<TextView>(R.id.author)
-        val poster = findViewById<ImageView>(R.id.poster)
-        val bookdetail = findViewById<TextView>(R.id.bookdetail)
-        val dateString = findViewById<TextView>(R.id.time)
-        val page1 = findViewById<EditText>(R.id.page1)
-        val page2 = findViewById<EditText>(R.id.page2)
-        val log1 = findViewById<EditText>(R.id.log1)
-        val log1page = findViewById<EditText>(R.id.log1page)
-        val log2 = findViewById<EditText>(R.id.log2)
-        val log3 = findViewById<ImageView>(R.id.log3)
-
-        // Get ImageView instance and set listener
-        log3.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            val mimeTypes = arrayOf("image/jpeg", "image/png")
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-            startActivityForResult(intent, 55)
-        }
-
 
         val addReviewUrl = GlobalApplication.v_url+"/reviews"
 
         // Get Button instance and set listener
         val addbutton = findViewById<Button>(R.id.addbutton)
         addbutton.setOnClickListener {
-            val title = title.text.toString()
-            val author = author.text.toString()
-            val log3 = selectedImageUri?.toString()
-            val dateString = dateString.text.toString()
-            val page1 = page1.text.toString().toIntOrNull() ?: 0
-            val page2 = page2.text.toString().toIntOrNull() ?: 0
-            val log1page = log1page.text.toString().toIntOrNull() ?: 0
-            val log1 = log1.text.toString()
-            val log2 = log2.text.toString()
-            val loggedInUser = GlobalApplication.loggedInUser ?: "" // 작성자 정보를 가져옴
+            val reviewTitle = titleTextView.text.toString()
+            val reviewAuthor = authorTextView.text.toString()
+            val reviewPoster = returnedItem?.image
+            val reviewDateString = dateStringTextView.text.toString()
+            val reviewPage1 = page1EditText.text.toString().toIntOrNull() ?: 0
+            val reviewPage2 = page2EditText.text.toString().toIntOrNull() ?: 0
+            val reviewlog1page = log1pageEditText.text.toString().toIntOrNull() ?: 0
+            val reviewlog1 = log1EditText.text.toString()
+            val reviewlog2 = log2EditText.text.toString()
+            val userId = sharedPreferences.getString("userId", null)
+
+            val reviewDateLocalDate = LocalDate.parse(reviewDateString, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
             // 리뷰 데이터를 JSON 형식으로 생성
             val reviewData = """
         {
-            "title": "$title",
-            "author": "$author",
-            "photo": "$log3",
-            "read_date": "$dateString",
-            "start_page": $page1,
-            "end_page": $page2,
-            "memorable_page": $log1page,
-            "memorable_quote": "$log1",
-            "comment": "$log2",
-            "reader": "$loggedInUser"
+            "title": "$reviewTitle",
+            "author": "$reviewAuthor",
+            "photo": "$reviewPoster",
+            "read_date": "$reviewDateString",
+            "start_page": $reviewPage1,
+            "end_page": $reviewPage2,
+            "memorable_page": $reviewlog1page,
+            "memorable_quote": "$reviewlog1",
+            "comment": "$reviewlog2",
+            "reader": "$userId"
         }
     """.trimIndent()
 
@@ -164,8 +145,40 @@ class Addpage_activity : AppCompatActivity() {
                     // 요청 성공
                     runOnUiThread {
                         // 성공 처리 로직을 구현하세요
-                        val intent = Intent(this@Addpage_activity, MainActivity::class.java)
-                        startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                        val responseBody = response.body?.string() ?: ""
+                        val jsonResponse = JSONObject(responseBody)
+
+                        // json 응답으로부터 값을 추출합니다.
+                        val newReviewId = jsonResponse.optInt("id", 0)
+                        val newReader = jsonResponse.optString("reader", "")
+                        val newReaderName = jsonResponse.optString("readerName", "")
+                        val newReaderImage = jsonResponse.optString("readerImage", "")
+
+                        // 성공 처리 로직을 구현하세요
+                        val newReviewItem = ReviewItem(
+                            title = reviewTitle,
+                            author = reviewAuthor,
+                            date = reviewDateLocalDate,
+                            startPage = reviewPage1,
+                            endPage = reviewPage2,
+                            log1 = reviewlog1,
+                            log1page = reviewlog1page,
+                            log2 = reviewlog2,
+                            log3 = reviewPoster,
+                            id = newReviewId,
+                            reader = newReader,
+                            readerName = newReaderName,
+                            readerImage = newReaderImage
+                        )
+
+                        Log.d("test", "$newReviewItem")
+                        // 결과를 설정하고 액티비티 종료
+                        val resultIntent = Intent().apply {
+                            putExtra("newreview", newReviewItem)
+                        }
+                        setResult(Activity.RESULT_OK, resultIntent)
+
+                        // MainActivity로 돌아가는 대신 액티비티를 종료합니다.
                         finish()
                     }
                 }
@@ -182,7 +195,7 @@ class Addpage_activity : AppCompatActivity() {
             )
             .build()
 
-        val datebutton = findViewById<Button>(R.id.datebutton)  // DatePicker 대신 Button으로 변경했습니다.
+        val datebutton = findViewById<ImageView>(R.id.datebutton)  // DatePicker 대신 Button으로 변경했습니다.
         datebutton.setOnClickListener {
             datePicker.show(supportFragmentManager, "date_picker")
         }
@@ -200,17 +213,29 @@ class Addpage_activity : AppCompatActivity() {
                 selectedCalendar.get(Calendar.DAY_OF_MONTH)
             )
             val selectedDateString =
-                selectedDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
-            dateString.text = selectedDateString
+                selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) //"yyyy년 MM월 dd일" 원래 이거였음
+            dateStringTextView.text = selectedDateString
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 55 && resultCode == RESULT_OK && data != null) {
-            // 이미지 선택 결과를 받음
-            selectedImageUri = data.data
+        if (requestCode == 14 && resultCode == Activity.RESULT_OK) {
+            returnedItem = data?.getSerializableExtra("item") as? Item
+            returnedItem?.let { item ->
+                titleTextView.text = item.title
+                authorTextView.text = item.author
+                Glide.with(this)
+                    .load(item.image)
+                    .into(posterImageView)
+            }
+        }
+
+        if (requestCode == 18 && resultCode == Activity.RESULT_OK) {
+            val recognizedText = data?.getStringExtra("RECOGNIZED_TEXT")
+            log1EditText.setText(recognizedText)
         }
     }
 

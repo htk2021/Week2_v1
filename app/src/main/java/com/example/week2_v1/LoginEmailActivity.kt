@@ -1,6 +1,8 @@
 package com.example.week2_v1
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -10,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 
@@ -19,10 +22,13 @@ class LoginEmailActivity : AppCompatActivity() {
     private lateinit var passwordEditText: EditText
     private lateinit var joinButton: Button
     private lateinit var deleteButton: Button
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_email)
+
+        sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
 
         emailEditText = findViewById(R.id.join_email)
         passwordEditText = findViewById(R.id.join_password)
@@ -32,8 +38,6 @@ class LoginEmailActivity : AppCompatActivity() {
         joinButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
-            Log.d("zebal", "$email, $password")
-            // MySQL에 사용자 정보 저장 요청
             CheckMySQL(email, password)
         }
 
@@ -54,7 +58,7 @@ class LoginEmailActivity : AppCompatActivity() {
         }
         """.trimIndent()
 
-        val requestBody = RequestBody.create("application/json".toMediaType(), json)
+        val requestBody = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
             .url(url)
@@ -70,7 +74,10 @@ class LoginEmailActivity : AppCompatActivity() {
                     runOnUiThread {
                         Toast.makeText(this@LoginEmailActivity, "로그인이 완료되었습니다.", Toast.LENGTH_SHORT).show()
 
-                        GlobalApplication.loggedInUser=email
+                        // SharedPreferences에 email 저장
+                        val editor = sharedPreferences.edit()
+                        editor.putString("userId", email)
+                        editor.apply()
 
                         val intent = Intent(this@LoginEmailActivity, MainActivity::class.java)
                         startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))

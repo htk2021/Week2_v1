@@ -1,5 +1,6 @@
 package com.example.week2_v1
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -39,6 +40,21 @@ class SearchActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupViews()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 15 && resultCode == Activity.RESULT_OK) {
+            val returnedItem = data?.getSerializableExtra("item") as? Item
+            returnedItem?.let {
+                val returnIntent = Intent()
+                returnIntent.putExtra("item", it)
+                setResult(Activity.RESULT_OK, returnIntent)
+                finish()
+            }
+        }
     }
 
     private fun setupViews() {
@@ -118,8 +134,7 @@ class SearchAdapter(private val items: List<Item>) : RecyclerView.Adapter<Search
                 val context = itemView.context
                 val intent = Intent(context, DetailPageActivity::class.java)
                 intent.putExtra("item", item)
-                context.startActivity(intent)
-                (context as? AppCompatActivity)?.finish()
+                (context as? AppCompatActivity)?.startActivityForResult(intent, 15)
             }
         }
 

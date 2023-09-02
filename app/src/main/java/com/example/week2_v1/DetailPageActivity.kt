@@ -1,5 +1,6 @@
 package com.example.week2_v1
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -48,9 +49,9 @@ class DetailPageActivity : AppCompatActivity() {
             //item 정보 보내주면서 후기 작성 페이지로 전환
             val selectButton: Button = findViewById(R.id.select_button)
             selectButton.setOnClickListener {
-                val intent = Intent(this, Addpage_activity::class.java)
-                intent.putExtra("item", item)
-                startActivity(intent)
+                val returnIntent = Intent()
+                returnIntent.putExtra("item", item)
+                setResult(Activity.RESULT_OK, returnIntent)
                 finish()
             }
         }

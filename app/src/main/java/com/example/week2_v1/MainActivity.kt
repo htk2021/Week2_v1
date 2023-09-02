@@ -1,7 +1,7 @@
 package com.example.week2_v1
 
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -88,7 +88,13 @@ class MainActivity : AppCompatActivity() {
         searchFragment: SearchFragment
     ) : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-        private val fragments = listOf(profileFragment, feedFragment, searchFragment)
+        //private val fragments = listOf(profileFragment, feedFragment, searchFragment)
+        private val fragments = listOf(
+            profileFragment,
+            feedFragment,
+            searchFragment as Fragment
+        )
+
         private val titles = listOf("Profile", "Feed", "Search")
 
         override fun getCount(): Int = fragments.size

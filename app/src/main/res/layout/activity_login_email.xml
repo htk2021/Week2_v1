@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="200dp"
-        android:text="이메일로 로그인"
+        android:text="읽을래요 계정으로 로그인"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="103dp"
         android:layout_marginTop="530dp"
-        android:text="가입"
+        android:text="완료"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

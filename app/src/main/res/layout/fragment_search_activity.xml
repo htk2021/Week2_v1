@@ -1,278 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.search.SearchFragment">
+
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/linear_layout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginTop="25dp"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Search bar -->
-        <TextView
-            android:id="@+id/searchEditText"
-            android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/input_friend"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Search"
-            android:padding="8dp" />
+            android:ems="10"
+            android:hint="제목을 입력하세요"
+            android:layout_marginEnd="100dp"/>
 
-        <!-- First horizontal scrollable section -->
-        <TextView
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/join_button"
+            style="@style/defaultButton"
+            android:layout_width="63dp"
             android:layout_height="wrap_content"
-            android:text="몰입캠프 개발자들이 추천하는 SQL 서적"
-            android:textSize="18sp"
-            android:padding="8dp" />
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable1"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable2"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable3"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable2"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable3"
-                    android:padding="8dp" />
-
-                <!-- Add more images here -->
-
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <!-- Second horizontal scrollable section -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="몰입캠프 개발자들이 추천하는 Node.Js 서적"
-            android:textSize="18sp"
-            android:padding="8dp" />
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable4"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable5"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable6"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable2"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable3"
-                    android:padding="8dp" />
-
-                <!-- Add more images here -->
-
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <!-- Third horizontal scrollable section -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="몰입캠프 개발자들이 추천하는 코틀린 서적"
-            android:textSize="18sp"
-            android:padding="8dp" />
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable7"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable8"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable9"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable2"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable3"
-                    android:padding="8dp" />
-
-                <!-- Add more images here -->
-
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="몰입캠프 개발자들이 추천하는 React 서적"
-            android:textSize="18sp"
-            android:padding="8dp" />
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable7"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable8"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable9"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable2"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable3"
-                    android:padding="8dp" />
-
-                <!-- Add more images here -->
-
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="몰입캠프 개발자들이 추천하는 플러터 서적"
-            android:textSize="18sp"
-            android:padding="8dp" />
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable7"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable8"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable9"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable2"
-                    android:padding="8dp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/drawable3"
-                    android:padding="8dp" />
-
-                <!-- Add more images here -->
-
-            </LinearLayout>
-        </HorizontalScrollView>
-
+            android:text="검색" />
     </LinearLayout>
-</ScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="105dp"
+        android:layout_marginBottom="0dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

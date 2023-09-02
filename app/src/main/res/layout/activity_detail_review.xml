@@ -64,6 +64,13 @@
                 android:fontFamily="@font/kotra_hope"
                 android:layout_centerHorizontal="true"
                 />
+
+            <FrameLayout
+                android:id="@+id/container1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </FrameLayout>
         </RelativeLayout>
 
         <LinearLayout
@@ -73,21 +80,21 @@
             app:layout_constraintTop_toBottomOf="@+id/IMAGE"
             app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/title1"
-            android:orientation="horizontal">
+            android:orientation="vertical">
             <TextView
                 android:id="@+id/title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="16dp"
                 android:textSize="22sp"
                 android:text="제목"
+                android:ellipsize="end"
+                android:maxLines="1"
                 app:layout_constraintHorizontal_bias="1.0" />
             <TextView
                 android:id="@+id/author"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="16dp"
                 android:textSize="18sp"
                 android:text="작가"
                 app:layout_constraintHorizontal_bias="1.0" />
@@ -133,14 +140,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <FrameLayout
-            android:id="@+id/container1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="-114dp">
-
-        </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="200dp"
+    android:layout_width="match_parent"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
     android:layout_height="250dp"
     android:orientation="vertical"
     android:paddingBottom="5dp"
@@ -44,17 +46,20 @@
             android:gravity="center"
             android:textSize="12sp" />
 
-        </RelativeLayout>
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="제목"
         android:textColor="#000"
         android:textSize="16sp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"/>
+
     <TextView
         android:id="@+id/author"
         android:layout_width="wrap_content"

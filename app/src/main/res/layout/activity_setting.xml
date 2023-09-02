@@ -6,25 +6,26 @@
     android:padding="16dp"
     android:orientation="vertical">
     <LinearLayout
-        android:layout_width="400dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center">
         <TextView
-            android:layout_width="120dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:text="취소"
             android:textSize="20sp"
             android:id="@+id/quit"/>
         <TextView
-            android:layout_width="130dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="프로필 편집"
             android:textSize="22sp"
             android:textAlignment="center"
             />
         <TextView
-            android:layout_width="120dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="15dp"
             android:text="완료"
@@ -43,7 +44,7 @@
         android:layout_gravity="center"/>
     <TextView
         android:id="@+id/editImage"
-        android:layout_width="350dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="사진 수정"
@@ -55,24 +56,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
-            android:layout_width="140dp"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/Name"
-                android:layout_marginTop="16dp"
+                android:id="@+id/Email"
+                android:layout_marginTop="10dp"
                 android:layout_width="120dp"
                 android:layout_height="50dp"
-                android:text="이름"
-                android:textSize="22sp" />
+                android:text="아이디"
+                android:textSize="22sp"
+                android:gravity="center_vertical"/>
 
             <TextView
-                android:id="@+id/Email"
+                android:id="@+id/Name"
                 android:layout_width="120dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
-                android:text="이메일 주소"
-                android:textSize="22sp" />
+                android:text="이름"
+                android:textSize="22sp"
+                android:gravity="center_vertical"/>
 
             <TextView
                 android:id="@+id/Password"
@@ -80,54 +83,73 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
                 android:text="비밀번호"
-                android:textSize="22sp" />
-
-            <TextView
-                android:id="@+id/Genre"
-                android:layout_width="120dp"
-                android:layout_height="280dp"
-                android:layout_marginTop="10dp"
-                android:text="장르"
-                android:textSize="22sp" />
+                android:textSize="22sp"
+                android:gravity="center_vertical"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <EditText
-                android:id="@+id/EditName"
-                android:layout_marginTop="8dp"
-                android:layout_width="230dp"
-                android:layout_height="50dp"
-                android:text="이름"
-                android:textSize="22sp" />
-
-            <EditText
+            <TextView
                 android:id="@+id/EditEmail"
-                android:layout_width="230dp"
+                android:layout_width="210dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
                 android:text="example@naver.com"
                 android:textSize="18sp"
-                android:inputType="textEmailAddress"/>
+                android:gravity="center_vertical"/>
+
+            <EditText
+                android:id="@+id/EditName"
+                android:layout_marginTop="10dp"
+                android:layout_width="210dp"
+                android:layout_height="50dp"
+                android:text="이름"
+                android:textSize="22sp"
+                android:gravity="center_vertical"/>
 
             <EditText
                 android:id="@+id/EditPassword"
-                android:layout_width="230dp"
+                android:layout_width="210dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="10dp"
-                android:text="비밀번호"
-                android:inputType="textPassword" />
-
-            <EditText
-                android:id="@+id/EditGenre"
-                android:layout_width="230dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:text="장르"
-                android:textSize="22sp" />
+                android:inputType="textPassword"
+                android:gravity="center_vertical"/>
         </LinearLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="(카카오 유저의 경우, 비밀번호를 변경해도\n실제로 반영되지 않습니다)"
+        android:textSize="18sp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="로그아웃"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/unlink_button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/unlink_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="회원 탈퇴"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </LinearLayout>

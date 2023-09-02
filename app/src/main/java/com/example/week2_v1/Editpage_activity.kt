@@ -40,6 +40,7 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 import android.app.Activity
+import android.content.SharedPreferences
 import android.widget.Toast
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -50,15 +51,21 @@ class Editpage_activity : AppCompatActivity() {
     private val calendar = Calendar.getInstance()
     private lateinit var datetext: TextView
     private var date: LocalDate? = null
-    private val ADD_PAGE_REQUEST_CODE = 123
     private var selectedImageUri: Uri? = null
 
     private lateinit var searchButton: TextView
+
     private lateinit var titleTextView: TextView
     private lateinit var authorTextView: TextView
-    private lateinit var descriptionTextView: TextView
-    private lateinit var imageView: ImageView
-    private var id by Delegates.notNull<Int>()
+    private lateinit var posterImageView: ImageView
+    private lateinit var dateStringTextView: TextView
+    private lateinit var page1EditText: EditText
+    private lateinit var page2EditText: EditText
+    private lateinit var log1EditText: EditText
+    private lateinit var log1pageEditText: EditText
+    private lateinit var log2EditText: EditText
+
+    private var returnedItem: Item? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,144 +77,74 @@ class Editpage_activity : AppCompatActivity() {
         searchButton.setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java)
 
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            startActivity(intent)
-            Log.d("AddpageActivity", "Going to SearchActivity")
-
-            finish()
+            startActivityForResult(intent, 14) //그대로 14 해도 되겠지?
         }
+
         titleTextView = findViewById(R.id.title)
         authorTextView = findViewById(R.id.author)
-        descriptionTextView = findViewById(R.id.bookdetail)
-        imageView = findViewById(R.id.poster)
-        val item = intent.getSerializableExtra("item") as? Item
-        item?.let {
-            titleTextView.text = item.title
-            authorTextView.text = item.author
-            descriptionTextView.text = item.description
+        posterImageView = findViewById(R.id.poster) //log3
+        dateStringTextView = findViewById(R.id.time)
+        page1EditText = findViewById(R.id.page1)
+        page2EditText = findViewById(R.id.page2)
+        log1EditText = findViewById(R.id.log1)
+        log1pageEditText = findViewById(R.id.log1page)
+        log2EditText = findViewById(R.id.log2)
+
+        // ReviewItem 객체와 position을 인텐트로부터 가져옴
+        val item = intent.getParcelableExtra<ReviewItem>("editedreview")!!
+        val position = intent.getIntExtra("position", -1)
+
+        // 가져온 데이터를 사용하여 화면의 뷰들에 값을 설정
+        titleTextView.text = item.title
+        authorTextView.text = item.author
+        posterImageView.let {
             Glide.with(this)
-                .load(item.image)
-                .into(imageView)
+                .load(item.log3)
+                .into(it)
         }
-
-
-        val dateString = findViewById<TextView>(R.id.time)
-        val page1 = findViewById<EditText>(R.id.page1)
-        val page2 = findViewById<EditText>(R.id.page2)
-        val log1 = findViewById<EditText>(R.id.log1)
-        val log1page = findViewById<EditText>(R.id.log1page)
-        val log2 = findViewById<EditText>(R.id.log2)
-        val log3 = findViewById<ImageView>(R.id.log3)
-
-
-
-        val url = GlobalApplication.v_url+"/editreviewsstart?userId=$id"  // 로드
-
-        val request = Request.Builder()
-            .url(url)
-            .method("GET", null)
-            .build()
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    // API 요청 실패 처리
-                    // 에러 처리 로직 구현
-                }
-            }
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                if (response.isSuccessful && responseBody != null) {
-                    runOnUiThread {
-                        try {
-                            val reviewsArray = JSONArray(responseBody)
-                            for (i in 0 until reviewsArray.length()) {
-                                val reviewJson = reviewsArray.getJSONObject(i)
-                                val title1 = reviewJson.getString("title")
-                                val author1 = reviewJson.getString("author")
-                                val readDate = reviewJson.getString("read_date")
-                                val photo = reviewJson.getString("photo")
-                                val start_page = reviewJson.getInt("start_page")
-                                val end_page = reviewJson.getInt("end_page")
-                                val memorable_page = reviewJson.getInt("memorable_page")
-                                val memorable_quote = reviewJson.getString("memorable_quote")
-                                val comment = reviewJson.getString("comment")
-
-
-
-                                titleTextView.text = title1
-                                authorTextView.text = author1
-                                Glide.with(this@Editpage_activity).load(photo).into(imageView)
-                                page1.setText(start_page.toString())
-                                page2.setText(end_page.toString())
-                                log1.setText(memorable_quote)
-                                log1page.setText(memorable_page.toString())
-                                log2.setText(comment)
-                                Glide.with(this@Editpage_activity)
-                                    .load(photo)
-                                    .into(log3)
-                                val formatter =
-                                    DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
-                                val DateString = LocalDate.parse(readDate).format(formatter)
-                                dateString.text = "$DateString"
-                            }
-
-                        } catch (e: JSONException) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            }
-        })
-
-
-        log3.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            val mimeTypes = arrayOf("image/jpeg", "image/png")
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-            startActivityForResult(intent, 55)
-        }
-
+        dateStringTextView.text = item.date?.let {
+            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            it.format(dateFormatter)
+        } ?: ""
+        page1EditText.setText(item.startPage.toString())
+        page2EditText.setText(item.endPage.toString())
+        log1EditText.setText(item.log1)
+        log1pageEditText.setText(item.log1page.toString())
+        log2EditText.setText(item.log2)
 
         // Get Button instance and set listener
         val addbutton = findViewById<Button>(R.id.addbutton)
         addbutton.setOnClickListener {
-            val title = titleTextView.text.toString()
-            val author = authorTextView.text.toString()
-            val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN)
-            val datetext = LocalDate.parse(dateString.text.toString(),formatter)
-            val startPage = page1.text.toString().toIntOrNull() ?: 0
-            val endPage = page2.text.toString().toIntOrNull() ?: 0
-            val log1 = log1.text.toString()
-            val log1page = log1page.text.toString().toIntOrNull() ?: 0
-            val log2 = log2.text.toString()
-            val log3 = selectedImageUri?.toString()
-            val loggedInUser = GlobalApplication.loggedInUser ?: ""
+            val reviewTitle = titleTextView.text.toString()
+            val reviewAuthor = authorTextView.text.toString()
+            val reviewPoster = item.log3
+            val reviewDateString = dateStringTextView.text.toString()
+            val reviewPage1 = page1EditText.text.toString().toIntOrNull() ?: 0
+            val reviewPage2 = page2EditText.text.toString().toIntOrNull() ?: 0
+            val reviewlog1page = log1pageEditText.text.toString().toIntOrNull() ?: 0
+            val reviewlog1 = log1EditText.text.toString()
+            val reviewlog2 = log2EditText.text.toString()
+            val id = item.id
 
+            val reviewDateLocalDate = LocalDate.parse(reviewDateString, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
             val addReviewUrl = GlobalApplication.v_url+"/editreviewsend" // 저장
 
-            // Get Button instance and set listener
-
-
             // 리뷰 데이터를 JSON 형식으로 생성
             val reviewData = """
-    {
-        "title": "$title",
-        "author": "$author",
-        "photo": "$log3",
-        "read_date": "$datetext",
-        "start_page": $startPage,
-        "end_page": $endPage,
-        "memorable_page": $log1page,
-        "memorable_quote": "$log1",
-        "comment": "$log2",
-        "reader": "$loggedInUser",
-        "id":"$id"
-        
-    }
-""".trimIndent()
+                {
+                    "title": "$reviewTitle",
+                    "author": "$reviewAuthor",
+                    "photo": "$reviewPoster",
+                    "read_date": "$reviewDateString",
+                    "start_page": $reviewPage1,
+                    "end_page": $reviewPage2,
+                    "memorable_page": $reviewlog1page,
+                    "memorable_quote": "$reviewlog1",
+                    "comment": "$reviewlog2",
+                    "id":"$id"
+                }
+            """.trimIndent()
 
             // OkHttp를 사용하여 POST 요청을 전송
             val client = OkHttpClient()
@@ -230,22 +167,33 @@ class Editpage_activity : AppCompatActivity() {
                     // 요청 성공
                     runOnUiThread {
                         // 성공 처리 로직을 구현하세요
-                        val intent = Intent(this@Editpage_activity, MainActivity::class.java)
-                        startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                        val EditedReviewItem = ReviewItem(
+                            title = reviewTitle,
+                            author = reviewAuthor,
+                            date = reviewDateLocalDate,
+                            startPage = reviewPage1,
+                            endPage = reviewPage2,
+                            log1 = reviewlog1,
+                            log1page = reviewlog1page,
+                            log2 = reviewlog2,
+                            log3 = reviewPoster,
+                            id = item.id,
+                            reader = item.reader,
+                            readerName = item.readerName,
+                            readerImage = item.readerImage
+                        )
+                        // 결과를 설정하고 액티비티 종료
+                        val resultIntent = Intent().apply {
+                            putExtra("editedreview", EditedReviewItem)
+                            putExtra("position", position)
+                        }
+                        setResult(Activity.RESULT_OK, resultIntent)
+
+                        // MainActivity로 돌아가는 대신 액티비티를 종료합니다.
                         finish()
                     }
                 }
             })
-
-
-
-
-
-
-            val intent = Intent(this, MainActivity::class.java)
-            setResult(Activity.RESULT_OK, intent)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            finish()
         }
 
         // Set up DatePickerDialog
@@ -258,7 +206,7 @@ class Editpage_activity : AppCompatActivity() {
             )
             .build()
 
-        val datebutton = findViewById<Button>(R.id.datebutton)  // DatePicker 대신 Button으로 변경했습니다.
+        val datebutton = findViewById<ImageView>(R.id.datebutton)  // DatePicker 대신 Button으로 변경했습니다.
         datebutton.setOnClickListener {
             datePicker.show(supportFragmentManager, "date_picker")
         }
@@ -276,30 +224,26 @@ class Editpage_activity : AppCompatActivity() {
                 selectedCalendar.get(Calendar.DAY_OF_MONTH)
             )
             val selectedDateString =
-                selectedDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
-            dateString.text = selectedDateString
+                selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            dateStringTextView.text = selectedDateString
         }
     }
+
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 55 && resultCode == RESULT_OK && data != null) {
-            // 이미지 선택 결과를 받음
-            selectedImageUri = data.data
+        if (requestCode == 14 && resultCode == Activity.RESULT_OK) {
+            returnedItem = data?.getSerializableExtra("item") as? Item
+            returnedItem?.let { item ->
+                titleTextView.text = item.title
+                authorTextView.text = item.author
+                Glide.with(this)
+                    .load(item.image)
+                    .into(posterImageView)
+            }
         }
-        if (requestCode == 33 && resultCode == RESULT_OK && data != null) {
-            val editedReview = data.getParcelableExtra<ReviewItem>("editedreview")
-            val position = data.getIntExtra("position", -1)
-            id = editedReview!!.id.toInt()
-
-            // 여기서 editedReview와 position을 사용하는 코드를 작성하면 됩니다.
-            // 예를 들면, 업데이트된 리뷰를 리스트에 반영하는 등의 작업이 될 수 있습니다.
-        }
-
-
-
     }
-
 
     class SingleDateValidator(private val minDate: LocalDate, private val maxDate: LocalDate?) : CalendarConstraints.DateValidator, Parcelable {
         @RequiresApi(Build.VERSION_CODES.O)

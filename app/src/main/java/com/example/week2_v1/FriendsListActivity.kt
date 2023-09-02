@@ -2,6 +2,7 @@ package com.example.week2_v1
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -31,7 +32,9 @@ import java.net.URLEncoder
 class FriendsListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var follwer_text: TextView
     private lateinit var friendshipAdapter: FriendsListAdapter
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,14 +42,17 @@ class FriendsListActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.rv)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        follwer_text = findViewById(R.id.input_title)
+        follwer_text.text = "나의 팔로워 목록"
 
         getFriendshipsFromServer()
     }
 
     private fun getFriendshipsFromServer() {
-        val userEmail = GlobalApplication.loggedInUser ?: ""
-        Log.d("계정주인", "$userEmail")
-        val encodedUserEmail = URLEncoder.encode(userEmail, "UTF-8")
+        //val userEmail = GlobalApplication.loggedInUser ?: ""
+        sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getString("userId", null)
+        val encodedUserEmail = URLEncoder.encode(userId, "UTF-8")
         val url = GlobalApplication.v_url+"/friendsofuser?userEmail=$encodedUserEmail"
 
         val request = Request.Builder()
@@ -100,7 +106,7 @@ class FriendsListAdapter(private val friendships: List<Friendship>) : RecyclerVi
             itemView.setOnClickListener {
                 val item = friendships[adapterPosition]
                 val context = itemView.context
-                val intent = Intent(context, ProfileFragment::class.java)
+                val intent = Intent(context, OthersProfileActivity::class.java)
                 intent.putExtra("item", item)
                 context.startActivity(intent)
                 (context as? AppCompatActivity)?.finish()
@@ -111,15 +117,16 @@ class FriendsListAdapter(private val friendships: List<Friendship>) : RecyclerVi
             nameTextView.text = friendship.name
             emailTextView.text = friendship.email
 
-            friendship.profileImageBlob?.let { imageBlob ->
-                // Blob 형태의 이미지를 처리하는 로직을 추가해주세요.
-                // 예시로는 Glide를 사용하여 이미지를 표시하도록 작성하였습니다.
+            if (friendship.image != null) {
+                // URL 형태의 이미지를 처리하는 로직을 추가합니다.
                 Glide.with(itemView)
-                    .load(imageBlob)
+                    .load(friendship.image)
                     .into(profileImageView)
-            } ?: run {
-                // 이미지가 없는 경우에는 빈 화면을 표시하거나 기본 이미지를 설정할 수 있습니다.
-                profileImageView.setImageDrawable(null) // 빈 화면을 표시하는 예시입니다.
+            } else {
+                // 이미지 URL이 없는 경우에는 기본 이미지를 설정합니다.
+                Glide.with(itemView)
+                    .load(R.drawable.profile_default_picture)
+                    .into(profileImageView)
             }
         }
     }
@@ -128,5 +135,5 @@ class FriendsListAdapter(private val friendships: List<Friendship>) : RecyclerVi
 data class Friendship(
     val email: String,
     val name: String,
-    val profileImageBlob: ByteArray? // Blob 형태의 프로필 이미지를 받을 필드로 수정합니다.
+    val image: String? // URL 형태의 프로필 이미지로 수정합니다.
 ): Serializable

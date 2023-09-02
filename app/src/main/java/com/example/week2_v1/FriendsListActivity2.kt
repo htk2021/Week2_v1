@@ -2,6 +2,7 @@ package com.example.week2_v1
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -32,6 +33,7 @@ class FriendsListActivity2 : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var friendshipAdapter: FriendsListAdapter
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,9 +46,10 @@ class FriendsListActivity2 : AppCompatActivity() {
     }
 
     private fun getFriendshipsFromServer() {
-        val userEmail = GlobalApplication.loggedInUser ?: ""
-        Log.d("계정주인", "$userEmail")
-        val encodedUserEmail = URLEncoder.encode(userEmail, "UTF-8")
+        //val userEmail = GlobalApplication.loggedInUser ?: ""
+        sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getString("userId", null)
+        val encodedUserEmail = URLEncoder.encode(userId, "UTF-8")
         val url = GlobalApplication.v_url+"/friendsofuser2?userEmail=$encodedUserEmail"
 
         val request = Request.Builder()

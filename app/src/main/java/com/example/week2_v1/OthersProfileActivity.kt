@@ -1,6 +1,5 @@
 package com.example.week2_v1
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
@@ -12,26 +11,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.RatingBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.week2_v1.ui.profile.MyRecyclerAdapter
 import com.example.week2_v1.ui.profile.ReviewItem
-import com.example.week2_v1.ui.profile.Setting
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -43,49 +36,40 @@ import org.json.JSONObject
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
-import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
-class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickListener, MyRecyclerAdapter.ItemLongClickListener {
+class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickListener {
 
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mRecyclerAdapter: MyRecyclerAdapter
     private var mreviewItems: ArrayList<ReviewItem> = ArrayList()
-    private val REQUEST_CODE = 1
-    private val ADD_PAGE_REQUEST_CODE = 123
-
+    private lateinit var dialogView: View
     private var userEmail: String? = null
+    private var isButtonClicked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_others_profile)
 
-        userEmail = intent.getStringExtra("email")
-
-        mreviewItems = loadReviewItems()
+        val item: Friendship? = intent.getSerializableExtra("item") as? Friendship
+        userEmail = item?.email //이건 지금 들어가있는 프로필의 계정 (타 계정)
+        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getString("userId", null) //이건 내 계정
 
         mRecyclerView = findViewById(R.id.recyclerView)
-        mRecyclerView.layoutManager = LinearLayoutManager(this)
+        mRecyclerView.layoutManager = GridLayoutManager(this, 2)
 
         mRecyclerAdapter = MyRecyclerAdapter()
         mRecyclerAdapter.setClickListener(this)
-        mRecyclerAdapter.setLongClickListener(this)
 
         mRecyclerView.adapter = mRecyclerAdapter
         mRecyclerAdapter.setReviewList(mreviewItems)
 
-        val iconplus: FloatingActionButton = findViewById(R.id.button1)
-        iconplus.setOnClickListener {
-            Log.d("MyApp", "Button clicked")
-            val intent = Intent(this, Addpage_activity::class.java)
-            startActivityForResult(intent, ADD_PAGE_REQUEST_CODE)
-        }
-
-        var isButtonClicked = false
         val followbutton: Button= findViewById(R.id.follow)
+
+        checkFriendshipStatus(userId, userEmail, followbutton)
+
         followbutton.setOnClickListener{
             isButtonClicked = !isButtonClicked
             if (isButtonClicked) {
@@ -102,20 +86,56 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
 
         }
 
-        val followerTextView: TextView = findViewById(R.id.follower)
-        followerTextView.setOnClickListener {
-            val intent = Intent(this, FriendsListActivity::class.java)
-            startActivity(intent)
+        if (userId != null) {
+            fetchUserInformation(userEmail)
         }
 
-        val loggedInUser = GlobalApplication.loggedInUser // 현재 사용자의 이메일
-        fetchUserInformation(loggedInUser)
-        fetchReviews()
+        fetchReviews(userEmail)
     }
 
-    private fun fetchReviews() {
-        val loggedInUser = GlobalApplication.loggedInUser // 현재 사용자의 이메일
-        val url = GlobalApplication.v_url+"/user/reviews/$userEmail" // 서버의 API 엔드포인트
+    private fun checkFriendshipStatus(userId: String?, userEmail: String?, followbutton: Button) {
+        val client = OkHttpClient()
+        val requestBody = JSONObject()
+            .put("email1", userId)
+            .put("email2", userEmail)
+            .toString()
+        val url = GlobalApplication.v_url+"/arewefriends" // 서버의 API 엔드포인트
+        val request = Request.Builder()
+            .url(url)  // 서버 URL을 적어주세요.
+            .post(RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), requestBody))
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+                // 네트워크 호출 실패 처리 (예: 토스트 메시지 출력 등)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.body?.let {
+                    try {
+                        val jsonResponse = JSONObject(it.string())
+                        val result = jsonResponse.getBoolean("result")
+                        runOnUiThread {
+                            if (result) {
+                                followbutton.text = "Following"
+                                isButtonClicked = true
+                            } else {
+                                followbutton.text = "Follow"
+                                isButtonClicked = false
+                            }
+                        }
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                        // JSON 파싱 오류 처리
+                    }
+                }
+            }
+        })
+    }
+
+    private fun fetchReviews(email: String?) {
+        val url = GlobalApplication.v_url+"/user/reviews/$email" // 서버의 API 엔드포인트
         val request = Request.Builder().url(url).build()
 
         val client = OkHttpClient()
@@ -150,9 +170,8 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
                                 val log2 = reviewJson.getString("comment")
                                 val log3 = reviewJson.getString("photo")
                                 val id = reviewJson.getInt("id")
-                                val readerName = reviewJson.getString("name")
+                                val readerName = reviewJson.getString("name")       // name 정보 추출
                                 val readerImage = reviewJson.getString("image")
-
                                 // 필요한 다른 데이터도 가져와서 ReviewItem에 추가
                                 //후기에 띄워놓지 않더라도 일단 받아왔음
 
@@ -167,10 +186,10 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
                                     log2 = log2,
                                     log3 = log3,
                                     id = id,
-                                    // 필요한 다른 데이터 전달
-                                    reader = GlobalApplication.loggedInUser,
+                                    reader = reader,
                                     readerName = readerName,
                                     readerImage = readerImage
+                                    // 필요한 다른 데이터 전달
                                 )
 
                                 mreviewItems.add(reviewItem)
@@ -191,7 +210,7 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
     }
 
     private fun fetchUserInformation(email: String?) {
-        val url = GlobalApplication.v_url+"/user/$userEmail" // 사용자 정보를 가져올 API 엔드포인트
+        val url = GlobalApplication.v_url+"/user/$email" // 사용자 정보를 가져올 API 엔드포인트
         val request = Request.Builder().url(url).build()
 
         val client = OkHttpClient()
@@ -211,24 +230,33 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
                         try {
                             val userJson = JSONObject(responseBody)
                             val name = userJson.getString("name")
-                            val image = userJson.getString("image")
+                            val image = userJson.optString("image", null.toString())  // 변경된 부분
+                            val follower = userJson.getString("follower_count")
+                            val following = userJson.getString("following_count")
 
                             // 사용자 정보를 UI에 적용
-                            val usernameTextView: TextView = findViewById(R.id.username)
-                            val useremailTextView: TextView = findViewById(R.id.userid)
-                            val imageView: ImageView = findViewById(R.id.imageView)
+                            val usernameTextView: TextView = findViewById(R.id.username) as TextView
+                            val useremailTextView: TextView = findViewById(R.id.userid) as TextView
+                            val imageView: ImageView = findViewById(R.id.imageView) as ImageView
+                            val userfollower: TextView = findViewById(R.id.follower) as TextView
+                            val userfollowing: TextView = findViewById(R.id.following) as TextView
 
                             usernameTextView.text = name
                             useremailTextView.text = email
+                            userfollower.text = "팔로워 | $follower 명"
+                            userfollowing.text = "팔로잉 | $following 명"
 
-                            if (image.isNotEmpty()) {
+
+                            if (image != "null") {
                                 // 이미지가 존재하는 경우 Glide를 사용하여 이미지 로드
+                                Log.d("과연", "1")
                                 Glide.with(this@OthersProfileActivity)
                                     .load(image)
                                     .into(imageView)
                             } else {
                                 // 이미지가 없는 경우 빈 화면을 표시 (설정해야 할 기본 이미지 등)
-                                imageView.setImageDrawable(null)
+                                Log.d("과연", "2")
+                                imageView.setImageResource(R.drawable.profile_default_picture)
                             }
                         } catch (e: JSONException) {
                             e.printStackTrace()
@@ -244,12 +272,13 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
         })
     }
     private fun follow(email: String?) {
-        val loggedInUser = GlobalApplication.loggedInUser
+        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getString("userId", null) //이건 내 계정
         val url = GlobalApplication.v_url+"/follow"
 
         val json = "application/json; charset=utf-8".toMediaTypeOrNull()
         val jsonObject = JSONObject()
-        jsonObject.put("loggedInUser", loggedInUser)
+        jsonObject.put("loggedInUser", userId)
         jsonObject.put("email", email)
         val requestBody = RequestBody.create(json, jsonObject.toString())
 
@@ -288,12 +317,13 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
         })
     }
     private fun unfollow(email: String?) {
-        val loggedInUser = GlobalApplication.loggedInUser
+        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getString("userId", null) //이건 내 계정
         val url = GlobalApplication.v_url+"/unfollow"
 
         val json = "application/json; charset=utf-8".toMediaTypeOrNull()
         val jsonObject = JSONObject()
-        jsonObject.put("loggedInUser", loggedInUser)
+        jsonObject.put("loggedInUser", userId)
         jsonObject.put("email", email)
         val requestBody = RequestBody.create(json, jsonObject.toString())
 
@@ -332,30 +362,14 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
         })
     }
 
-
-    override fun onItemLongClick(view: View, position: Int) {
-        val builder = AlertDialog.Builder(view.context)
-        builder.setTitle("리뷰 삭제")
-        builder.setMessage("삭제하시겠습니까?")
-        builder.setNegativeButton("OK") { dialog, _ ->
-            mreviewItems.removeAt(position)
-            mRecyclerAdapter.setReviewList(mreviewItems)
-            mRecyclerAdapter.notifyDataSetChanged()
-            saveReviewItems()
-            dialog.dismiss()
-        }
-        builder.setPositiveButton("No") { dialog, _ ->
-            dialog.dismiss()
-        }
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onItemClick(view: View, position: Int) {
         val item: ReviewItem = mreviewItems[position]
         val inflater: LayoutInflater = layoutInflater
-        val dialogView: View = inflater.inflate(R.layout.activity_detail_review, null)
+        dialogView= inflater.inflate(R.layout.activity_detail_review, null)
+
+        val readerimage = dialogView.findViewById<ImageView>(R.id.readerimage)
+        val readername = dialogView.findViewById<TextView>(R.id.readername)
         val title = dialogView.findViewById<TextView>(R.id.title)
         val author = dialogView.findViewById<TextView>(R.id.author)
         val dateString = dialogView.findViewById<TextView>(R.id.time)
@@ -363,25 +377,28 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
         val log1 = dialogView.findViewById<TextView>(R.id.log1)
         val log2 = dialogView.findViewById<TextView>(R.id.log2)
         val log3 = dialogView.findViewById<ImageView>(R.id.log3)
-        val button = dialogView.findViewById<Button>(R.id.button)
 
+        val button = dialogView.findViewById<Button>(R.id.button)
+        button.visibility = View.GONE
+
+        Glide.with(readerimage.context)
+            .load(item.readerImage)
+            .placeholder(R.drawable.profile_default_picture)
+            .into(readerimage)
+        readername?.text = item.readerName
         title?.text = item.title
-        page?.setText("${item.startPage}쪽부터 ${item.endPage}쪽까지")
-        log1?.setText("\"${item.log1}\", ${item.log1page}p")
-        log2?.setText(item.log2)
+        author?.text = item.author
+        page?.setText(item.startPage.toString()+"쪽부터"+item.endPage.toString()+"쪽까지")
+        log1?.setText("\""+item.log1.toString()+"\", "+item.log1page.toString()+"p")
+        log2?.setText(item.log2) //log2?.setText(item.log2.toString())
         Glide.with(log3.context)
             .load(item.log3)
             .into(log3)
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
-        dateString.text = item.date?.format(dateFormatter)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        dateString.text = "${item.date?.format(dateFormatter)}"
+
 
         val dialog = Dialog(this, android.R.style.Theme_Light_NoTitleBar_Fullscreen)
-        button.setOnClickListener {
-            val intent = Intent(this, Editpage_activity::class.java)
-            intent.putExtra("editedreview", item as Parcelable)
-            intent.putExtra("position", position)
-            startActivityForResult(intent, 33)
-        }
         dialog.setContentView(dialogView)
         dialog.show()
 
@@ -404,31 +421,5 @@ class OthersProfileActivity : AppCompatActivity(), MyRecyclerAdapter.ItemClickLi
                 return false
             }
         })
-    }
-
-    private fun saveReviewItems() {
-        try {
-            val fos = openFileOutput("reviews.dat", Context.MODE_PRIVATE)
-            val os = ObjectOutputStream(fos)
-            os.writeObject(mreviewItems)
-            os.close()
-            fos.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun loadReviewItems(): ArrayList<ReviewItem> {
-        try {
-            val fis = openFileInput("reviews.dat")
-            val isObject = ObjectInputStream(fis)
-            val reviews: ArrayList<ReviewItem> = isObject.readObject() as ArrayList<ReviewItem>
-            isObject.close()
-            fis.close()
-            return reviews
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return ArrayList()
     }
 }

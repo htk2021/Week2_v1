@@ -1,6 +1,8 @@
 package com.example.week2_v1
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -20,10 +22,13 @@ class JoinActivity : AppCompatActivity() {
     private lateinit var passwordEditText: EditText
     private lateinit var joinButton: Button
     private lateinit var deleteButton: Button
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join)
+
+        sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
 
         nameEditText = findViewById(R.id.join_name)
         emailEditText = findViewById(R.id.join_email)
@@ -35,8 +40,6 @@ class JoinActivity : AppCompatActivity() {
             val name = nameEditText.text.toString()
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
-            Log.d("zebal", "$name, $email, $password")
-            // MySQL에 사용자 정보 저장 요청
             saveUserToMySQL(name, email, password)
         }
 
@@ -73,7 +76,11 @@ class JoinActivity : AppCompatActivity() {
                     runOnUiThread {
                         Toast.makeText(this@JoinActivity, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show()
                         // 회원가입 완료 후 다음 작업 수행
-                        GlobalApplication.loggedInUser=email
+
+                        // SharedPreferences에 email 저장
+                        val editor = sharedPreferences.edit()
+                        editor.putString("userId", email)
+                        editor.apply()
 
                         val intent = Intent(this@JoinActivity, MainActivity::class.java)
                         startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
