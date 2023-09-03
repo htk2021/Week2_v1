@@ -31,15 +31,14 @@
 우측 상단의 설정 탭을 누르면 닉네임과 비밀번호를 수정할 수 있습니다. 
 
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/64135d12-9179-4590-a36e-bb9e233a6b2f.jpg" width="200"/>
-<img src="https://github.com/htk2021/Week2_v1/assets/138096893/2330d0cb-4400-436d-86d0-869d17bf5f74.jpg" width="200" height="400"/>
-<img src="https://github.com/htk2021/Week2_v1/assets/138096893/14cb599d-4b2f-4e85-a187-d58c839b7da3.jpg" width="200" height="400"/>
-<img src="https://github.com/htk2021/Week2_v1/assets/138096893/a9640781-3ecf-482d-b2ea-9e770a5229a1.jpg" width="200" height="400"/>
-<img src="https://github.com/htk2021/Week2_v1/assets/138096893/57d7748a-d47b-485c-bffd-d6482307a586.jpg" width="200" height="400"/>
-
-<img src="https://github.com/htk2021/Week2_v1/assets/138096893/50358649-4bd7-47f0-b36d-d80e47ffffd6.jpg" width="200" height="400"/>
-<img src="https://github.com/htk2021/Week2_v1/assets/138096893/5d518f39-72b2-4978-8d85-24e88b0091e7.jpg" width="200" height="400"/>
-<img src="https://github.com/htk2021/Week2_v1/assets/138096893/68db73cf-387b-4453-9872-3d662551160f.jpg" width="200" height="400"/>
-<img src="https://github.com/htk2021/Week2_v1/assets/138096893/927bc6bc-2ebd-4145-8746-cdbd60c45444.jpg" width="200" height="400"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/2330d0cb-4400-436d-86d0-869d17bf5f74.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/14cb599d-4b2f-4e85-a187-d58c839b7da3.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/a9640781-3ecf-482d-b2ea-9e770a5229a1.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/57d7748a-d47b-485c-bffd-d6482307a586.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/50358649-4bd7-47f0-b36d-d80e47ffffd6.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/5d518f39-72b2-4978-8d85-24e88b0091e7.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/68db73cf-387b-4453-9872-3d662551160f.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/927bc6bc-2ebd-4145-8746-cdbd60c45444.jpg" width="200"/>
 
 
 # 탭 2 : 피드 
