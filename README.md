@@ -26,6 +26,8 @@
 
 작성 후 완료 버튼을 누르면 작성한 후기가 DB에 저장되고, 프로필이 업데이트됩니다.
 
+작성한 리뷰들은 클릭해서 상세정보를 확인하고, 수정할 수 있습니다. 또한 길게 클릭하여 삭제할 수 있습니다.
+
 프로필에서 팔로워, 팔로잉을 누르면 나와 팔로워, 팔로잉 관계에 있는 계정들의 목록을 확인할 수 있습니다.
 
 우측 상단의 설정 탭을 누르면 닉네임과 비밀번호를 수정할 수 있습니다. 
@@ -37,16 +39,23 @@
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/57d7748a-d47b-485c-bffd-d6482307a586.jpg" width="200"/>
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/50358649-4bd7-47f0-b36d-d80e47ffffd6.jpg" width="200"/>
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/5d518f39-72b2-4978-8d85-24e88b0091e7.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/d2869a0f-efef-485c-b490-9e7096db9fca.jpg" width="200"/>
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/68db73cf-387b-4453-9872-3d662551160f.jpg" width="200"/>
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/927bc6bc-2ebd-4145-8746-cdbd60c45444.jpg" width="200"/>
 
 
 # 탭 2 : 피드 
-유저와 팔로우 관계에 있는 계정들이 먼저 상단에 노출되며, 하단에는 무관한 유저의 피드도 올라가게끔 구성함.
+유저가 팔로우하고 있는 계정의 피드들이 먼저 상단에 노출되며, 하단에는 무관한 유저의 피드들도 보이게끔 구성하였습니다.
 
-상단의 검색 창에 들어가면 유저 검색창이 뜨고, 유저 이름을 검색하면 비슷한 이름을 가진 계정들의 목록이 뜸.
+피드를 클릭하면 상세 정보를 확인할 수 있고, 계정을 클릭해 작성한 유저의 프로필을 볼 수 있습니다.
 
-여기서 각 유저 요소를 클릭하면 해당 유저의 프로필로 이어짐.
+상단의 검색 창에서는 직접 다른 유저를 검색할 수 있습니다. 여기서 각 유저 요소를 클릭하면 해당 유저의 프로필로 이어집니다.
+
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/8f9c9e9c-576c-41c0-b3f8-2a082c2d52a2.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/c8955215-59fd-4c9a-8aa8-19e417924fcb.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/05341e95-13c9-4399-8982-749594979188.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/77c02cf0-45d7-4283-a5cf-1f78a26cb1ce.jpg" width="200"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/418fb86b-0fbb-496a-aa99-1eae3024cf0b.jpg" width="200"/>
 
 
 # 탭 3 : 추천
@@ -57,6 +66,7 @@
 탭 1에서와 마찬가지로 책을 선택하여 후기를 작성할 수 있다.
 
 찜 버튼을 추가하여 유저마다 찜 목록을 추가하고자 함.
+
 
 # 개선사항
 
