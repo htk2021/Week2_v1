@@ -9,7 +9,7 @@
 
 카카오 계정 혹은 읽을래요 전용 계정을 생성해서 앱을 이용할 수 있습니다.
 
-앱을 다운로드 받고 처음 로그인을 한 뒤에는, 직접 로그아웃 하기 전까지 계정을 기억해 앱에 접속할 때마다 자동으로 기존 계정에 로그인합니다.
+앱을 다운로드 받고 처음 로그인을 한 뒤에는, 로그아웃 하기 전까지 계정을 기억해 앱에 접속할 때마다 자동으로 기존 계정에 로그인합니다.
 
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/33c39c8a-4123-4330-a9ab-7d6a0fe51668.jpg" width="200" height="400"/>
 
@@ -30,7 +30,7 @@
 
 우측 상단의 설정 탭을 누르면 닉네임과 비밀번호를 수정할 수 있습니다. 
 
-<img src="https://github.com/htk2021/Week2_v1/assets/138096893/64135d12-9179-4590-a36e-bb9e233a6b2f.jpg" width="200" height="400"/>
+<img src="https://github.com/htk2021/Week2_v1/assets/138096893/64135d12-9179-4590-a36e-bb9e233a6b2f.jpg" width="200"/>
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/2330d0cb-4400-436d-86d0-869d17bf5f74.jpg" width="200" height="400"/>
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/14cb599d-4b2f-4e85-a187-d58c839b7da3.jpg" width="200" height="400"/>
 <img src="https://github.com/htk2021/Week2_v1/assets/138096893/a9640781-3ecf-482d-b2ea-9e770a5229a1.jpg" width="200" height="400"/>
